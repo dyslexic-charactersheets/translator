@@ -1,7 +1,7 @@
 package model
 
 import (
-	"code.google.com/p/go.crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 	"fmt"
 	"math/rand"
 	// "sort"
@@ -12,11 +12,11 @@ import (
 
 // Languages
 var Languages []string = []string{
-	"gb", "it", "fr", "de", "es", "pl", "pt", "ru", "nl", "cy", "kl", "us",
+	"gb", "it", "fr", "de", "es", "pl", "pt", "ru", "nl", "no", "jp", "cy", "kl", "us",
 }
 
 var DisplayLanguages []string = []string{
-	"it", "de", "es", "fr", "pl", "pt", "ru", "nl",
+	"it", "de", "es", "fr", "pl", "pt", "ru", "nl", "jp",
 }
 
 var LanguageNames map[string]string = map[string]string{
@@ -30,6 +30,7 @@ var LanguageNames map[string]string = map[string]string{
 	"ru": "Ру́сский",
 	"nl": "Nederlands",
 	"no": "Norsk",
+	"jp": "日本語",
 	"cy": "Cymraeg",
 	"kl": "Klingon",
 	"us": "US English",
@@ -46,6 +47,7 @@ var LanguageNamesEnglish map[string]string = map[string]string{
 	"ru": "Russian",
 	"nl": "Dutch",
 	"no": "Norwegian",
+	"jp": "Japanese",
 	"cy": "Welsh",
 	"kl": "Klingon",
 	"us": "US English",
@@ -61,6 +63,7 @@ var LanguagePaths map[string]string = map[string]string{
 	"ru": "russian",
 	"nl": "dutch",
 	"no": "norwegian",
+	"jp": "japanese",
 	"cy": "welsh",
 	"kl": "klingon",
 	"us": "american",

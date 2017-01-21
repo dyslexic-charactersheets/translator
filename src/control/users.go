@@ -3,7 +3,7 @@ package control
 import (
 	"../config"
 	"../model"
-	"code.google.com/p/go.crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 	"fmt"
 	// "github.com/bpowers/seshcookie"
 	"encoding/json"

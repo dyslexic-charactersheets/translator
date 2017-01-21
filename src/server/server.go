@@ -6,7 +6,7 @@ import (
 	"fmt"
 	// "io/ioutil"
 	"../control"
-	"code.google.com/p/go.crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 	"github.com/bpowers/seshcookie"
 	"html/template"
 	"net/http"
