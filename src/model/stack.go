@@ -102,7 +102,7 @@ func stackEntries(entries []*Entry) []*StackedEntry {
 	return values
 }
 
-func sortStacks(values []*StackedEntry, sortBy string) []*StackedEntry {
+func sortStacks(values []*StackedEntry, sortBy, search string) []*StackedEntry {
 	if Debug >= 1 {
 		fmt.Println("Sorting stacks by:", sortBy)
 	}
@@ -115,23 +115,34 @@ func sortStacks(values []*StackedEntry, sortBy string) []*StackedEntry {
 		sort.Sort(stacksBySourceCount(values))
 	case "az":
 		sort.Sort(stacksByName(values))
+	// case "relevance":
+	// 	sort.Sort(stacksByRelevance(values))
 	}
 	return values
 }
 
-func GetStackedEntries(game, level, show, search, sortBy, language string, user *User) []*StackedEntry {
+func GetStackedEntries(game, level, show, search string, fuzzySearch bool, sortBy, language string, user *User) []*StackedEntry {
 	leveln, err := strconv.Atoi(level)
 	if err != nil || leveln > 4 || leveln < 1 {
 		leveln = 0
 	}
-	entries := GetEntriesAt(game, leveln, show, search, language, user)
+
+	// we always pass fuzzy search to the lower layer, so that we can catch cases where the search terms
+	// appear in different parts of the stack
+	entries := GetEntriesAt(game, leveln, show, search, true, language, user)
 	if search != "" {
 		// searching can result in getting only part of a stack
 		// make sure we have *all* of each stack
 		entries = RefillEntries(entries)
 	}
 	stacks := stackEntries(entries)
-	return sortStacks(stacks, sortBy)
+
+	if search != "" && !fuzzySearch {
+		// now, if we need to, we can cut it down to those stacks matching all search terms
+		stacks = FilterStackedSearchResults(stacks, search)
+	}
+
+	return sortStacks(stacks, sortBy, search)
 }
 
 func RefillEntries(entries []*Entry) []*Entry {
@@ -151,6 +162,12 @@ func RefillEntries(entries []*Entry) []*Entry {
 		}
 	}
 	return refilled
+}
+
+func FilterStackedSearchResults(in []*StackedEntry, search string) []*StackedEntry {
+	// todo filter
+
+	return in
 }
 
 func (e *Entry) GetStackedEntry() *StackedEntry {

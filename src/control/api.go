@@ -53,6 +53,57 @@ func APITranslateHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "OK")
 }
 
+const maxTranslations = 10
+
+func APILookupHandler(w http.ResponseWriter, r *http.Request) {
+	user := GetCurrentUser(r)
+	if user == nil {
+		fmt.Println("Unknown user")
+		return
+	}
+
+	lookup := r.FormValue("lookup")
+	language := r.FormValue("language")
+
+	// find stacked entries matching the search terms
+	results := model.GetStackedEntries("", "0", "", lookup, true, "relevance", language, nil)
+
+	// get those results with translations
+	translationResults := make([]*model.StackedTranslation, 0, maxTranslations)
+	for _, result := range results {
+		translations := result.GetTranslations(language)
+		if len(translations) > 0 {
+			var preferredTranslation *model.StackedTranslation = nil
+			for _, translation := range translations {
+				if translation.IsPreferred {
+					preferredTranslation = translation
+				}
+			}
+			if preferredTranslation == nil {
+				preferredTranslation = translations[0]
+			}
+
+			preferredTranslation.Entry = result
+			fmt.Println("Found result:", preferredTranslation)
+			translationResults = append(translationResults, preferredTranslation)
+		}
+		if len(translationResults) >= maxTranslations {
+			break;
+		}
+	}
+
+	if len(translationResults) > 0 {
+		fmt.Fprint(w, "<table>");
+		for _, tr := range translationResults {
+			fmt.Println("Printing result:", tr)
+			translated := tr.FullText
+			original := tr.Entry.FullText
+			fmt.Fprintf(w, "<tr><th>%s</th><td>%s</td></tr>", original, translated);
+		}
+		fmt.Fprint(w, "</table>");
+	}
+}
+
 func APIVoteHandler(w http.ResponseWriter, r *http.Request) {
 	if model.Debug >= 1 {
 		fmt.Println(" * Vote handler")

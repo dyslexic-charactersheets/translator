@@ -1,5 +1,5 @@
 jQuery(function ($) {
-	$("body.translate input").change(function () {
+	$("body.translate form#form-translate input").change(function () {
 		var input = $(this);
 		var name = input.attr('name');
 		var original = $("#"+name+"-original").val();
@@ -16,8 +16,11 @@ jQuery(function ($) {
 		});
 	}).focus(function () {
 		$(this).closest('td.translation-parts').find('.my-translation-arrow-score').addClass('focus');
+		$(this).closest('tr.entry').addClass('focus');
+		changeLookup();
 	}).blur(function () {
 		$(this).closest('td.translation-parts').find('.my-translation-arrow-score').removeClass('focus');
+		$(this).closest('tr.entry').removeClass('focus');
 	});
 
 	$("body.translate a.vote").click(function () {
@@ -71,4 +74,48 @@ jQuery(function ($) {
 	$("a.reveal-my-translation").click(function () {
 		$(this).closest("tr").addClass("with-translation").find("p.my-translation input").first().focus();
 	});
+
+	var lastLookup = '';
+	function changeLookup() {
+		var lookup = $("#lookup").val();
+		if (lookup == "") {
+			lookup = $("tr.entry.focus").data("entry-original-text");
+			$("#lookup").attr('placeholder', lookup);
+		}
+		if (lookup == lastLookup)
+			return;
+		lastLookup = lookup;
+		if (lookup == "" || typeof lookup === 'undefined')
+			return;
+
+		// ajax lookup
+		lookup = lookup.replace("|", " ");
+		$.get('/api/lookup', {
+			language: $("#current-language").val(),
+			lookup: lookup,
+		}, function (data) {
+			$("#lookup-results").html(data);
+			layoutFooterSpacer();
+		});
+	}
+
+	$("#close-translation-hint").click(function (e) {
+		e.preventDefault();
+		$("#lookup-results").html("");
+		layoutFooterSpacer();
+	});
+
+	function layoutFooterSpacer() {
+		var height = $("#translation-hint").outerHeight();
+		$("#footer-spacer").css({height: height+"px"});
+	}
+
+	$("#lookup").change(changeLookup).blur(changeLookup);
+
+	$("#lookup-form").submit(function (e) {
+		e.preventDefault();
+		changeLookup();
+	});
+
+	layoutFooterSpacer();
 });

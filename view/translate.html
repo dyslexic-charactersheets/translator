@@ -101,7 +101,7 @@
 {{ $currentUser := .CurrentUser }}
 {{ $lang := .CurrentLanguage }}
 {{ range $i, $entry := .Entries }}
-<tr class='entry {{ entryClass $entry $lang $currentUser }}' data-line='{{ $i }}' data-entry-id='{{ entryId $entry }}'>
+<tr class='entry {{ entryClass $entry $lang $currentUser }}' data-line='{{ $i }}' data-entry-id='{{ entryId $entry }}' data-entry-original-text='{{ $entry.FullText }}'>
 	<td class='btn-cell'><a class='reveal reveal-sources' data-line='{{ $i }}' data-toggle='modal' data-target='#entry-modal-{{ $i }}' style='cursor: pointer;'>
 		<span class='glyphicon glyphicon-book'></span>&nbsp; <b>{{ len $entry.EntrySources }}</b>
 		<br/><span class='label label-primary'>{{ $entry.Count }}</span>
@@ -178,6 +178,8 @@
 
 
 </table>
+<div id='footer-spacer'>
+</div>
 </form>
 
 {{ $languages := .Languages }}
@@ -224,6 +226,27 @@
 </div>
 
 {{ end }}
+
+<div id='translation-hint'>
+	<div class='container'>
+		<div class="row">
+			<div class="col-md-3">
+				<form class='form-inline lookup-form' id='lookup-form' action='' role='form'>
+						<div class="form-group">
+							<input type="search" name="lookup" id="lookup" placeholder="Look up translations..." class="form-control" size="50" value="">
+						</div>
+				</form>
+			</div>
+			<div class="col-md-9">
+				<div id='lookup-results'>
+				</div>
+			</div>
+			<a id='close-translation-hint'>
+				<span class="glyphicon glyphicon-remove"></span>
+			</a>
+		</div>
+	</div>
+</div>
 
 <div id='saved-notice'><span>Saved</span></div>
 

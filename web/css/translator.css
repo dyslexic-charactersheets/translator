@@ -456,3 +456,67 @@ span.my-translation-arrow {
   border-radius: 3px;
   padding: 3px;
 }
+
+#footer-spacer {
+  min-height: 50px;
+  background: black;
+}
+
+#translation-hint {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  background: rgba(0,0,0,0.8);
+  min-height: 50px;
+}
+
+#translation-hint .container {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  position: relative;
+}
+
+#lookup-form {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#lookup-results {
+  color: white;
+  /*font-weight: bold;*/
+  text-shadow: 0 0 5px black;
+}
+
+#lookup-results table {
+  width: 100%;
+}
+
+#lookup-results table tr:nth-child(2n) {
+  background: rgba(255,255,255,0.1);
+}
+
+#lookup-results th {
+  text-align: right;
+  padding-right: 12px;
+}
+
+#close-translation-hint {
+  display: block;
+  position: absolute;
+  top: 6px;
+  right: -20px;
+
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  width: 30px;
+
+  color: white;
+  background: black;
+  border: 1px solid #666;
+  border-radius: 40px;
+
+  cursor: pointer;
+}

@@ -107,7 +107,7 @@ func GetEntriesPartOf(partOf string) []*Entry {
 	return makeEntries(results)
 }
 
-func GetEntriesAt(game string, level int, show, search, language string, translator *User) []*Entry {
+func GetEntriesAt(game string, level int, show, search string, fuzzySearch bool, language string, translator *User) []*Entry {
 	if game == "" && level == 0 && show == "" && search == "" {
 		return GetEntries()
 	}
@@ -159,10 +159,28 @@ func GetEntriesAt(game string, level int, show, search, language string, transla
 	if search != "" {
 		searchTerms := strings.Split(search, " ")
 		fmt.Println("Searching for:", search)
-		for _, term := range searchTerms {
-			term = strings.ToLower(term)
-			sql = sql + " and lower(Original) like ?"
-			args = append(args, "%"+term+"%")
+
+		if fuzzySearch {
+			// todo make it more fuzzy?
+			sql = sql + " and ("
+			first := true
+			for _, term := range searchTerms {
+				if first {
+					first = false
+				} else {
+					sql = sql + " or "
+				}
+				term = strings.ToLower(term)
+				sql = sql + "lower(Original) like ?"
+				args = append(args, "%"+term+"%")
+			}
+			sql = sql + ")"
+		} else {
+			for _, term := range searchTerms {
+				term = strings.ToLower(term)
+				sql = sql + " and lower(Original) like ?"
+				args = append(args, "%"+term+"%")
+			}
 		}
 	}
 

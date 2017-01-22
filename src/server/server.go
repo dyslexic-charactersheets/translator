@@ -47,6 +47,7 @@ func RunTranslator(host string, debug int) {
 	handler.HandleFunc("/api/entries", control.APIEntriesHandler)
 	handler.HandleFunc("/api/translate", control.APITranslateHandler)
 	handler.HandleFunc("/api/vote", control.APIVoteHandler)
+	handler.HandleFunc("/api/lookup", control.APILookupHandler)
 
 	handler.Handle("/css/", http.FileServer(http.Dir("web")))
 	handler.Handle("/bootstrap/", http.FileServer(http.Dir("web")))
