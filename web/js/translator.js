@@ -102,6 +102,7 @@ jQuery(function ($) {
 	$("#close-translation-hint").click(function (e) {
 		e.preventDefault();
 		$("#lookup-results").html("");
+		$("#lookup").val("");
 		layoutFooterSpacer();
 	});
 

@@ -17,14 +17,22 @@
     <input type='text' name='name' id='add-user-name' class='form-control' placeholder='Joe Blogs'>
   </div>
 
+  <div class='well'>
+    <label>Language</label>
   <p>
-    <label>Language</label> &nbsp; 
     {{ $languageNames := .LanguageNames }}
     {{ range $lang := .Languages }}
     <label class="checkbox-inline"><input type='radio' name='language' value='{{ $lang }}' {{ if eq $lang "gb" }}checked{{ end }}>&nbsp;
       <img src='/images/flags/{{ $lang }}.png'> &nbsp; {{ index $languageNames $lang }} &nbsp;
     </label>
     {{ end }}
+  </p>
+  </div>
+
+  <p>
+    <label for='welcome-email'>
+    <input type='checkbox' checked name='welcome-email'> &nbsp; Send welcome email with instructions.
+    </label>
   </p>
 
   <p>

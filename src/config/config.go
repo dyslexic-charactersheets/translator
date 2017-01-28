@@ -23,6 +23,7 @@ type Configuration struct {
 	Database    databaseConfig `toml:"db"`
 	OldDatabase databaseConfig `toml:"old_db"`
 	Github      githubConfig   `toml:"github"`
+	Mail        mailConfig     `toml:"mail"`
 	Partial		bool           `toml:"partial"`
 }
 
@@ -44,6 +45,13 @@ type databaseConfig struct {
 
 type githubConfig struct {
 	AccessToken string `toml:"access_token"`
+}
+
+type mailConfig struct {
+	Hostname string `toml:"host"`
+	Username string `toml:"user"`
+	Password string `toml:"password"`
+	From string `toml:"from"`
 }
 
 // loading the config

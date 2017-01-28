@@ -16,13 +16,11 @@ import (
 
 const SESSIONKEY = "93Yb8c59aASAf3kfT5xU8wz2GmfP4CbSNdhuvLxAdUqZnThbxuAAZu5AVWUrpsmXz47SYnvDcqr7TfNgLP8CpEpAmzGXNvMu72Scd4EAZGuepTQ7kWENemqr"
 
-var hostname string
-
 func RunTranslator(host string, debug int) {
-	hostname = host
+	control.Hostname = host
 	model.Debug = debug
 
-	fmt.Println("Starting web server:", hostname)
+	fmt.Println("Starting web server:", control.Hostname)
 
 	handler := http.NewServeMux()
 	handler.HandleFunc("/home", control.DashboardHandler)
@@ -271,20 +269,26 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendSecretEmail(user *model.User, secret string) {
+	mailConfig := config.Config.Mail
+
 	email := user.Email
 
 	msg := `Subject: Your account at the Character Sheets Translator
 Content-Type: text/plain; charset="UTF-8"
 
+This is your password reclaim email for the Dyslexic Character Sheets Translator
+
 To set your password, click here:
 
 http://%s/account/reclaim?email=%s&secret=%s
 `
-	msg = fmt.Sprintf(msg, hostname, email, secret)
+	msg = fmt.Sprintf(msg, control.Hostname, email, secret)
+	from := mailConfig.From
 
 	to := []string{user.Email}
 	fmt.Println("Sending message to", user.Email, "\n", msg)
-	err := smtp.SendMail("localhost:25", smtp.CRAMMD5Auth("example@charactersheets.minotaur.cc", "password"), "no-reply@charactersheets.minotaur.cc", to, []byte(msg))
+	auth := smtp.CRAMMD5Auth(mailConfig.Username, mailConfig.Password)
+	err := smtp.SendMail(mailConfig.Hostname, auth, from, to, []byte(msg))
 	if err != nil {
 		fmt.Println("Error sending mail:", err)
 	}

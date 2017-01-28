@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"html/template"
 	"net/http"
+	"net/smtp"
 	"strings"
 	// "net/url"
 	"github.com/russross/blackfriday"
@@ -39,6 +40,68 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 			Secret:   "",
 		}
 		user.Save()
+
+		// send a welcome message
+		if r.FormValue("welcome-email") == "on" {
+			mailConfig := config.Config.Mail
+
+			msg := `Subject: Welcome to the Dyslexic Character Sheets Translator
+Content-Type: text/plain; charset="UTF-8"
+Reply-to: marcus@basingstokeanimesociety.com
+CC: marcus@basingstokeanimesociety.com
+
+Welcome to the Dyslexic Character Sheets Translator.
+
+Your account has been created in the %s group. Click this link to set a password:
+
+http://%s/account/reclaim?email=%s&secret=%s
+
+Click the "Translate" link at the top to start translating or to correct existing translations. 
+You can use the options at the top to limit it to [Pathfinder, Core, Untranslated]; or you can 
+search for specific words. If the original text includes a vertical bar "|", that indicates a line 
+break; try to include a "|" at a similar point in the translation. If the original is broken into 
+two or more boxes, that means the font changes mid-line (eg, "Greater RAGE!") and you should try to 
+make sure the right bit of the translation lines up with the right font... as best you can. 
+It won't always work out neatly.
+
+If other people have already translated a line, you can use the tick and cross boxes to vote for 
+the version you like or dislike. When I export the translations, it will take these votes into 
+account when choosing which one to give me. Writing the exact same translation as somebody else is 
+equivalent to voting for their translation.
+
+If you need to see writing on the page, the button on the left of each line brings up a list of the 
+pages it appears on, with links to the PDFs. The "Sources" link at the top gives you a more 
+complete list.
+
+Once you're logged in, click the "Sources" link at the top to see the most recent preview of the 
+translations in PDF. The previews *don't* update automatically as you translate, only when I spend 
+an evening or two making all the PDFs.
+
+
+https://charactersheets.slack.com/
+
+You should receive an invitation to this site as well. It's a place for translators to chat and 
+compare notes. If you need to ask me a question, this the place to do it.
+
+
+Marcus Downing
+http://charactersheets.minotaur.cc/
+`
+
+			hostname := Hostname
+			secret := user.GenerateSecret()
+			msg = fmt.Sprintf(msg, model.LanguageNamesEnglish[language], hostname, email, secret)
+
+			to := []string{user.Email}
+			from := mailConfig.From
+
+			fmt.Println("Sending message to", user.Email, "\n", msg)
+			auth := smtp.CRAMMD5Auth(mailConfig.Username, mailConfig.Password)
+			err := smtp.SendMail(mailConfig.Hostname, auth, from, to, []byte(msg))
+			if err != nil {
+				fmt.Println("Error sending mail:", err)
+			}
+		}
 
 		http.Redirect(w, r, "/users", 303)
 	} else {
