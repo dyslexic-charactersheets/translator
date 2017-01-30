@@ -10,6 +10,7 @@
 			<b>{{ $recent.User.Name }}</b>
 			<div>{{ $recent.LoggedInFor }}</div>
 		</td>
+		<td style="width: 32px;">{{ if $recent.User.IsAdmin }}<span class='glyphicon glyphicon-star'></span>{{ else if $recent.User.IsLanguageLead }}<span class='glyphicon glyphicon-chevron-up'></span>{{ end }}</td>
 		<td style="width: 32px;"><img src='/images/flags/{{ $recent.User.Language }}.png'></td>
 	</tr>
 	{{ end }}
