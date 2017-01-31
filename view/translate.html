@@ -145,6 +145,8 @@
 							<label class='part'>{{ $part.Translation }}</label>
 						{{ end }}
 					</td>
+
+					<td class='warning-cell {{ if $translation.Translation.IsMismatched }}warning-visible{{ end }}'><span class="glyphicon glyphicon-warning-sign"></span></td>
 					
 					<td class='vote-cell'><span class='btn-group btn-group-xs vote'>
 						{{ if $translations.IsVotable }}
@@ -168,6 +170,7 @@
 						<input type='text' id='part-{{ $i }}-{{ $j }}' name='part-{{ $i }}-{{ $j }}' class='form-control' value='{{ $part.Translation }}' />
 					{{ end }}
 				</td>
+				<td class='warning-cell {{ if $myTranslation.IsMismatched }}warning-visible{{ end }}'><span class="glyphicon glyphicon-warning-sign"></span></td>
 				<td class='vote-cell'></td>
 			</tr>
 		</table>

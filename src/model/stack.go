@@ -225,6 +225,10 @@ func makeStackedTranslation(entry *StackedEntry, parts []*Translation) *StackedT
 	}
 	fullText := strings.Join(text, "")
 
+	countOriginalLines := len(strings.Split(entry.FullText, "|"))
+	countTranslatedLines := len(strings.Split(fullText, "|"))
+	isMismatched := fullText != "" && countTranslatedLines != countOriginalLines
+
 	stack := StackedTranslation{
 		Entry:        entry,
 		Language:     language,
@@ -234,6 +238,7 @@ func makeStackedTranslation(entry *StackedEntry, parts []*Translation) *StackedT
 		FullText:     fullText,
 		IsPreferred:  isPreferred,
 		IsConflicted: isConflicted,
+		IsMismatched: isMismatched,
 	}
 	return &stack
 }
@@ -247,6 +252,7 @@ type StackedTranslation struct {
 	FullText     string
 	IsPreferred  bool
 	IsConflicted bool
+	IsMismatched bool
 }
 
 func (st *StackedTranslation) ID() uint64 {

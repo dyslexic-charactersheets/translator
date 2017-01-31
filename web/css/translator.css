@@ -325,6 +325,19 @@ label.part {
   margin-bottom: 4px;
 }*/
 
+.warning-cell {
+  width: 30px;
+  padding-left: 25px;
+}
+
+.warning-cell span {
+  display: none;
+}
+
+.warning-cell.warning-visible span {
+  display: inline;
+}
+
 .vote-cell {
   width: 60px;
   text-align: right;
