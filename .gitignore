@@ -28,3 +28,4 @@ _testmain.go
 sql
 config.toml
 .sql
+.DS_Store
