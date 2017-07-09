@@ -211,22 +211,25 @@ type Issue struct {
 // }
 
 func GetGithubIssues() ([]Issue, int) {
-	issues, num := getGithubAPIIssues("charactersheets")
+	issues, num := getGithubAPIIssues("marcusatbang/charactersheets")
+	// issues, num := getGithubAPIIssues("dyslexic-charactersheets/pages")
 	return issues, num
 }
 
 func GetWebsiteIssues() ([]Issue, int) {
-	issues, num := getGithubAPIIssues("charactersheets-website")
+	issues, num := getGithubAPIIssues("marcusatbang/charactersheets-website")
+	// issues, num := getGithubAPIIssues("dyslexic-charactersheets/website")
 	return issues, num
 }
 
 func GetTranslatorIssues() ([]Issue, int) {
-	issues, num := getGithubAPIIssues("charactersheets-translator")
+	issues, num := getGithubAPIIssues("marcusatbang/charactersheets-translator")
+	// issues, num := getGithubAPIIssues("dyslexic-charactersheets/translator")
 	return issues, num
 }
 
 func getGithubAPIIssues(repo string) ([]Issue, int) {
-	resp, err := http.Get("https://api.github.com/repos/marcusatbang/"+repo+"/issues?state=open&sort=updated&access_token="+config.Config.Github.AccessToken)
+	resp, err := http.Get("https://api.github.com/repos/"+repo+"/issues?state=open&sort=updated&access_token="+config.Config.Github.AccessToken)
 	if err != nil {
 		fmt.Println("Error fetching issues from GitHub:", err)
 		return []Issue{}, 0

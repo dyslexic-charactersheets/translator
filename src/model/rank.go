@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"regexp"
 )
 
 func (st *StackedTranslation) GetVotes() []*Vote {
@@ -17,13 +18,16 @@ func (st *StackedTranslation) GetVotes() []*Vote {
 	return votes
 }
 
-func GetPreferredTranslations(language string) []*StackedTranslation {
+func GetPreferredTranslations(language string, correctDice bool) []*StackedTranslation {
 	entries := stackEntries(GetEntries())
 	pref := make([]*StackedTranslation, 0, len(entries))
 	for _, entry := range entries {
 		translations := entry.GetTranslations(language)
 		selected := PickPreferredTranslation(entry.RankTranslations(translations, false))
 		if selected != nil {
+			if correctDice && selected.Entry.FullText == "d00" {
+				selected = correctTranslationDice(selected)
+			}
 			pref = append(pref, selected)
 		}
 	}
@@ -47,6 +51,22 @@ func PickPreferredTranslation(translations []RankTranslation) *StackedTranslatio
 		}
 	}
 	return translations[0].Translation
+}
+
+func correctTranslationDice(translation *StackedTranslation) *StackedTranslation {
+	d00rex, _ := regexp.Compile("00$")
+	if d00rex.MatchString(translation.FullText) {
+		fmt.Println("Correcting dice translation:", translation.FullText)
+		parts := make([]*Translation, len(translation.Parts))
+		for i, part := range translation.Parts {
+			newPart := *part
+			newPart.Translation = d00rex.ReplaceAllString(newPart.Translation, "")
+			parts[i] = &newPart
+		}
+
+		return makeStackedTranslation(translation.Entry, parts)
+	}
+	return translation
 }
 
 func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, save bool) []RankTranslation {

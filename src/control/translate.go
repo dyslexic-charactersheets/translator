@@ -294,7 +294,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 	language := r.FormValue("language")
 	if language != "" {
 		fmt.Println("Exporting in", language)
-		translations := model.GetPreferredTranslations(language)
+		translations := model.GetPreferredTranslations(language, true)
 
 		w.Header().Set("Content-Encoding", "UTF-8")
 		w.Header().Set("Content-Type", "application/csv; charset=UTF-8")
