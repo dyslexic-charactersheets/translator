@@ -8,6 +8,12 @@ import (
 type signal struct{}
 
 var liveEntriesLit []string = []string{
+	"STR",
+	"DEX",
+	"CON",
+	"INT",
+	"WIS",
+	"CHA",
 	"Acrobatics",
 	"Aegis Level",
 	"Alchemist Level",
