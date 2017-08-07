@@ -208,7 +208,6 @@ var liveEntriesLit []string = []string{
 	"Religion",
 	"Ride",
 	"Rogue Level",
-	"Rogue Level",
 	"Samurai Level",
 	"Savant Level",
 	"Scout Level",
