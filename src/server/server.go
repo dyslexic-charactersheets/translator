@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"strings"
+	"strconv"
 )
 
 const SESSIONKEY = "93Yb8c59aASAf3kfT5xU8wz2GmfP4CbSNdhuvLxAdUqZnThbxuAAZu5AVWUrpsmXz47SYnvDcqr7TfNgLP8CpEpAmzGXNvMu72Scd4EAZGuepTQ7kWENemqr"
@@ -59,7 +60,8 @@ func RunTranslator(host string, debug int) {
 	authHandler := AuthHandler{handler}
 	sessionHandler := seshcookie.NewSessionHandler(&authHandler, SESSIONKEY, nil)
 
-	if err := http.ListenAndServe(":9091", sessionHandler); err != nil {
+	listenPort := ":"+strconv.Itoa(config.Config.Server.Port)
+	if err := http.ListenAndServe(listenPort, sessionHandler); err != nil {
 		fmt.Printf("Error in ListenAndServe:", err)
 	}
 
