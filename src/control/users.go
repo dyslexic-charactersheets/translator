@@ -43,18 +43,52 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 
 		// send a welcome message
 		if r.FormValue("welcome-email") == "on" {
-			mailConfig := config.Config.Mail
+			sendInvitationEmail(user)
+		}
 
-			msg := `Subject: Welcome to the Dyslexic Character Sheets Translator
+		http.Redirect(w, r, "/users", 303)
+	} else {
+		renderTemplate("users", w, r, func(data *TemplateData) {
+			data.Users = model.GetUsers()
+			data.UsersByLanguage = make(map[string][]*model.User, len(data.Languages))
+			for _, user := range data.Users {
+				data.UsersByLanguage[user.Language] = append(data.UsersByLanguage[user.Language], user)
+			}
+		})
+	}
+}
+
+func UsersReinviteHandler(w http.ResponseWriter, r *http.Request) {
+	currentUser := GetCurrentUser(r)
+	if !currentUser.IsAdmin {
+		http.Redirect(w, r, "/users", 303)
+		return
+	}
+
+	email := r.FormValue("user")
+	user := model.GetUserByEmail(email)
+	if user == nil {
+		fmt.Println("User not found: "+email)
+		return
+	}
+	fmt.Println("Reinviting")
+	sendInvitationEmail(user)
+
+	http.Redirect(w, r, "/users", 303)
+}
+
+func sendInvitationEmail(user *model.User) {
+	mailConfig := config.Config.Mail
+
+	msg := `Subject: Welcome to the Dyslexic Character Sheets Translator
 Content-Type: text/plain; charset="UTF-8"
-Reply-to: marcus@basingstokeanimesociety.com
-CC: marcus@basingstokeanimesociety.com
+Reply-to: marcus@dyslexic-charactersheets.com
 
 Welcome to the Dyslexic Character Sheets Translator.
 
 Your account has been created in the %s group. Click this link to set a password:
 
-http://%s/account/reclaim?email=%s&secret=%s
+https://%s/account/reclaim?email=%s&secret=%s
 
 Click the "Translate" link at the top to start translating or to correct existing translations. 
 You can use the options at the top to limit it to [Pathfinder, Core, Untranslated]; or you can 
@@ -85,33 +119,23 @@ compare notes. If you need to ask me a question, this the place to do it.
 
 
 Marcus Downing
-http://charactersheets.minotaur.cc/
+https://www.dyslexic-charactersheets.com/
 `
 
-			hostname := Hostname
-			secret := user.GenerateSecret()
-			msg = fmt.Sprintf(msg, model.LanguageNamesEnglish[language], hostname, email, secret)
+	language := user.Language
+	email := user.Email
+	hostname := Hostname
+	secret := user.GenerateSecret()
+	msg = fmt.Sprintf(msg, model.LanguageNamesEnglish[language], hostname, email, secret)
 
-			to := []string{user.Email}
-			from := mailConfig.From
+	to := []string{user.Email}
+	from := mailConfig.From
 
-			fmt.Println("Sending message to", user.Email, "\n", msg)
-			auth := smtp.CRAMMD5Auth(mailConfig.Username, mailConfig.Password)
-			err := smtp.SendMail(mailConfig.Hostname, auth, from, to, []byte(msg))
-			if err != nil {
-				fmt.Println("Error sending mail:", err)
-			}
-		}
-
-		http.Redirect(w, r, "/users", 303)
-	} else {
-		renderTemplate("users", w, r, func(data *TemplateData) {
-			data.Users = model.GetUsers()
-			data.UsersByLanguage = make(map[string][]*model.User, len(data.Languages))
-			for _, user := range data.Users {
-				data.UsersByLanguage[user.Language] = append(data.UsersByLanguage[user.Language], user)
-			}
-		})
+	fmt.Println("Sending message to", user.Email, "\n", msg)
+	auth := smtp.CRAMMD5Auth(mailConfig.Username, mailConfig.Password)
+	err := smtp.SendMail(mailConfig.Hostname, auth, from, to, []byte(msg))
+	if err != nil {
+		fmt.Println("Error sending mail:", err)
 	}
 }
 

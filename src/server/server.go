@@ -37,6 +37,7 @@ func RunTranslator(host string, debug int) {
 	handler.HandleFunc("/users/add", control.UsersAddHandler)
 	handler.HandleFunc("/users/del", control.UsersDelHandler)
 	handler.HandleFunc("/users/masq", control.UsersMasqueradeHandler)
+	handler.HandleFunc("/users/reinvite", control.UsersReinviteHandler)
 	handler.HandleFunc("/account", control.AccountHandler)
 	handler.HandleFunc("/account/password", control.SetPasswordHandler)
 	handler.HandleFunc("/account/reclaim", control.AccountReclaimHandler)
