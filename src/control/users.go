@@ -182,6 +182,7 @@ https://www.dyslexic-charactersheets.com/
 		return
 	}
 
+	fmt.Println("Invitation email sent to "+user.Email)
 }
 
 func UsersAddHandler(w http.ResponseWriter, r *http.Request) {
