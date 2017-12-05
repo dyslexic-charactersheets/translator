@@ -11,6 +11,7 @@ import (
 	"html/template"
 	"net/http"
 	"net/smtp"
+	"crypto/tls"
 	"strings"
 	// "net/url"
 	"github.com/russross/blackfriday"
@@ -128,15 +129,59 @@ https://www.dyslexic-charactersheets.com/
 	secret := user.GenerateSecret()
 	msg = fmt.Sprintf(msg, model.LanguageNamesEnglish[language], hostname, email, secret)
 
-	to := []string{user.Email}
+	// to := []string{user.Email}
 	from := mailConfig.From
 
 	fmt.Println("Sending message to", user.Email, "\n", msg)
 	auth := smtp.CRAMMD5Auth(mailConfig.Username, mailConfig.Password)
-	err := smtp.SendMail(mailConfig.Hostname, auth, from, to, []byte(msg))
+	// err := smtp.SendMail(mailConfig.Hostname, auth, from, to, []byte(msg))
+
+	// SEND EMAIL THE HARD WAY
+	// connect
+	client, err := smtp.Dial(mailConfig.Hostname)
+	defer client.Quit()
 	if err != nil {
 		fmt.Println("Error sending mail:", err)
+		return
 	}
+	if ok, _ := client.Extension("STARTTLS"); ok {
+		tlsConfig := &tls.Config{ServerName: mailConfig.Hostname, InsecureSkipVerify: true} 
+		client.StartTLS(tlsConfig)
+	}
+	err = client.Auth(auth)
+	if err != nil {
+		fmt.Println("Error sending mail:", err)
+		return
+	}
+
+	// set recipient
+	client.Mail(from)
+	client.Rcpt(user.Email)
+
+	// write the body
+	writer, err := client.Data()
+	if err != nil {
+		fmt.Println("Error sending mail:", err)
+		return
+	}
+	_, err = fmt.Fprintf(writer, msg)
+	if err != nil {
+		fmt.Println("Error sending mail:", err)
+		return
+	}
+	err = writer.Close()
+	if err != nil {
+		fmt.Println("Error sending mail:", err)
+		return
+	}
+
+	// Send the QUIT command and close the connection.
+	err = client.Quit()
+	if err != nil {
+		fmt.Println("Error sending mail:", err)
+		return
+	}
+
 }
 
 func UsersAddHandler(w http.ResponseWriter, r *http.Request) {
