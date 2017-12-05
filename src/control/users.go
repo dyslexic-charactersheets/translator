@@ -133,7 +133,7 @@ https://www.dyslexic-charactersheets.com/
 	from := mailConfig.From
 
 	fmt.Println("Sending message to", user.Email, "\n", msg)
-	auth := smtp.CRAMMD5Auth(mailConfig.Username, mailConfig.Password)
+	// auth := smtp.CRAMMD5Auth(mailConfig.Username, mailConfig.Password)
 	// err := smtp.SendMail(mailConfig.Hostname, auth, from, to, []byte(msg))
 
 	// SEND EMAIL THE HARD WAY
