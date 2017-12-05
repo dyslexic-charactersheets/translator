@@ -125,7 +125,7 @@ https://www.dyslexic-charactersheets.com/
 
 	language := user.Language
 	email := user.Email
-	hostname := Hostname
+	hostname := config.Config.Server.Hostname
 	secret := user.GenerateSecret()
 	msg = fmt.Sprintf(msg, model.LanguageNamesEnglish[language], hostname, email, secret)
 
