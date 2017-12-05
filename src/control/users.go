@@ -148,11 +148,11 @@ https://www.dyslexic-charactersheets.com/
 		tlsConfig := &tls.Config{ServerName: mailConfig.Hostname, InsecureSkipVerify: true} 
 		client.StartTLS(tlsConfig)
 	}
-	err = client.Auth(auth)
-	if err != nil {
-		fmt.Println("Error sending mail:", err)
-		return
-	}
+	// err = client.Auth(auth)
+	// if err != nil {
+	// 	fmt.Println("Error sending mail:", err)
+	// 	return
+	// }
 
 	// set recipient
 	client.Mail(from)
