@@ -83,6 +83,7 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 	scores := make(map[string]int, ln)
 	upvoters := make(map[string][]string, ln)
 	downvoters := make(map[string][]string, ln)
+	users := make(map[string]*User, ln)
 
 	for _, translation := range translations {
 		scores[translation.FullText] = 0
@@ -94,6 +95,7 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 		upvoters[translation.FullText] = append(upvoters[translation.FullText], translation.Translator)
 
 		for _, vote := range translation.GetVotes() {
+			users[vote.Voter.Email] = vote.Voter
 			if vote.Vote {
 				upvoters[translation.FullText] = append(upvoters[translation.FullText], vote.Voter.Email)
 			} else {
@@ -107,6 +109,8 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 			voteWeight := 2
 			if lead != nil && voter == lead.Email {
 				voteWeight++;
+			} else if users[voter].Language != language {
+				voteWeight = 1;
 			}
 
 			scores[text] += voteWeight
@@ -116,6 +120,8 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 			voteWeight := 2
 			if lead != nil && voter == lead.Email {
 				voteWeight++;
+			} else if users[voter].Language != language {
+				voteWeight = 1;
 			}
 
 			scores[text] -= voteWeight
