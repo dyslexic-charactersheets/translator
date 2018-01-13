@@ -109,7 +109,7 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 			voteWeight := 2
 			if lead != nil && voter == lead.Email {
 				voteWeight++;
-			} else if users[voter].Language != language {
+			} else if users[voter] != nil && users[voter].Language != language {
 				voteWeight = 1;
 			}
 
@@ -120,7 +120,7 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 			voteWeight := 2
 			if lead != nil && voter == lead.Email {
 				voteWeight++;
-			} else if users[voter].Language != language {
+			} else if users[voter] != nil && users[voter].Language != language {
 				voteWeight = 1;
 			}
 
