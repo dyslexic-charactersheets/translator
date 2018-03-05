@@ -10,7 +10,6 @@ import (
 	"github.com/bpowers/seshcookie"
 	"html/template"
 	"net/http"
-	"net/smtp"
 	"strings"
 	"strconv"
 )
@@ -272,10 +271,6 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendSecretEmail(user *model.User, secret string) {
-	mailConfig := config.Config.Mail
-
-	email := user.Email
-
 	msg := `Subject: Your account at the Character Sheets Translator
 Content-Type: text/plain; charset="UTF-8"
 
@@ -285,14 +280,11 @@ To set your password, click here:
 
 http://%s/account/reclaim?email=%s&secret=%s
 `
-	msg = fmt.Sprintf(msg, control.Hostname, email, secret)
-	from := mailConfig.From
+	msg = fmt.Sprintf(msg, control.Hostname, user.Email, secret)
 
-	to := []string{user.Email}
 	fmt.Println("Sending message to", user.Email, "\n", msg)
-	auth := smtp.CRAMMD5Auth(mailConfig.Username, mailConfig.Password)
-	err := smtp.SendMail(mailConfig.Hostname, auth, from, to, []byte(msg))
-	if err != nil {
-		fmt.Println("Error sending mail:", err)
+
+	if ok := config.SendMail(user.Email, msg); ok {
+		fmt.Println("Sent password reclaim email to:", user.Email)
 	}
 }

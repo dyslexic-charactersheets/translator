@@ -52,6 +52,8 @@ type mailConfig struct {
 	Username string `toml:"user"`
 	Password string `toml:"password"`
 	From string `toml:"from"`
+	UseStartTLS bool `toml:"use_start_tls"`
+	UseAuth bool `toml:"use_auth"`
 }
 
 // loading the config
@@ -67,6 +69,14 @@ func LoadConfig(initial bool) {
 		Server: serverConfig{
 			Hostname: "",
 			Port:     9091,
+		},
+		Mail: mailConfig{
+			Hostname: "localhost",
+			Username: "",
+			Password: "",
+			From: "noreply@dyslexic-charactersheets.com",
+			UseStartTLS: true,
+			UseAuth: false,
 		},
 	}
 	if initial {
