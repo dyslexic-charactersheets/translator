@@ -9,6 +9,7 @@ import(
 
 func SendMail(rcpt, message string) bool {
 	mailConfig := Config.Mail
+	fmt.Println("Mail config:", mailConfig)
 
 	var auth smtp.Auth = nil
 	if mailConfig.UseAuth {

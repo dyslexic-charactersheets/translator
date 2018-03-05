@@ -71,7 +71,7 @@ func LoadConfig(initial bool) {
 			Port:     9091,
 		},
 		Mail: mailConfig{
-			Hostname: "localhost",
+			Hostname: "localhost:25",
 			Username: "",
 			Password: "",
 			From: "noreply@dyslexic-charactersheets.com",
