@@ -4,9 +4,11 @@ import (
 	"../config"
 	"../model"
 	"golang.org/x/crypto/bcrypt"
+	"crypto/sha256"
 	"fmt"
 	// "github.com/bpowers/seshcookie"
 	"encoding/json"
+	"encoding/hex"
 	"io/ioutil"
 	"html/template"
 	"net/http"
@@ -23,6 +25,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		data.Issues, data.NumIssues = GetGithubIssues()
 		data.WebsiteIssues, data.NumWebsiteIssues = GetWebsiteIssues()
 		data.TranslatorIssues, data.NumTranslatorIssues = GetTranslatorIssues()
+		data.DevLoginURL = GetDevLoginURL(r)
 	})
 }
 
@@ -243,6 +246,25 @@ func GetTranslatorIssues() ([]Issue, int) {
 	issues, num := getGithubAPIIssues("marcusatbang/charactersheets-translator")
 	// issues, num := getGithubAPIIssues("dyslexic-charactersheets/translator")
 	return issues, num
+}
+
+func GetDevLoginURL(r *http.Request) string {
+	base := config.Config.Dev.DevLoginURL
+	sharedSecret := config.Config.Dev.SharedSecret
+
+	currentUser := GetCurrentUser(r)
+	h := sha256.New()
+	h.Write([]byte(currentUser.Email))
+	hash := h.Sum(nil)
+	token := hex.EncodeToString(hash)
+
+	h = sha256.New()
+	h.Write([]byte(token))
+	h.Write([]byte(sharedSecret))
+	hash = h.Sum(nil)
+	signature := hex.EncodeToString(hash)
+
+	return base+"?login="+token+":"+signature
 }
 
 func getGithubAPIIssues(repo string) ([]Issue, int) {

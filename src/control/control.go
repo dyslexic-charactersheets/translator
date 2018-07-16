@@ -54,6 +54,7 @@ type TemplateData struct {
 	WebsiteIssues       []Issue
 	NumTranslatorIssues int
 	TranslatorIssues    []Issue
+	DevLoginURL         string
 }
 
 type Pagination struct {
