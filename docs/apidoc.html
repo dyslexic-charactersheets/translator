@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <style>
+
+        body {
+            background: #ececec;
+        }
+
+        .dark {
+            background: #202020;
+            color: #ccc;
+        }
+
+        .dark pre {
+            margin-top: 3em;
+            color: #ccc;
+            margin-bottom: 2em;
+        }
+
+        .header {
+            color: #cc8;
+        }
+        .comment {
+            color: #8c8;
+        }
+
+        .left {
+            margin-left: auto;
+            width: 100%;
+            max-width: 700px;
+            padding-left: 1em;
+            padding-right: 1em;
+        }
+
+        .right {
+            margin-top: 3em;
+            margin-right: auto;
+            width: 100%;
+            max-width: 700px;
+            padding-left: 1em;
+            padding-right: 1em;
+        }
+    </style>
+
+    <title>Translation API</title>
+  </head>
+  <body>
+    <div class="container-fluid">
+        
+        <div class="row">
+            <div class="col-sm">
+                <div class="left">
+                    <p>&nbsp;</p>
+                    <h1>Translation API</h1>
+                </div>
+            </div>
+            <div class="col-sm dark">
+                &nbsp;
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="left">
+                    <p>The translator exposes an API to query for translations.</p>
+                    <p>This is a simple HTTP API that uses a subset of the gettext PO format for both queries and responses.</p>
+
+                    <h3>Connection</h3>
+                    <p>Connect to the API with HTTP on the chosen port. All requests should use the <code>POST</code> method.</p>
+
+                    <h3>Authentication</h3>
+                    <p>There is currently no authentication. It's assumed that clients will be running on the same machine.</p>
+                    <p>The service should behave itself behind HTTP proxy services, which you can use to add authentication, cacheing etc.</p>
+
+                    <h3>Format</h3>
+                    <p>All requests and responses should use UTF-8.</p>
+                </div>
+            </div>
+            <div class="col-sm dark">
+                <div class='right'>
+                    <dl>
+                        <dt>Port</dt>
+                        <dd>3473 (default)</dd>
+                        
+                        <dt>Protocol</dt>
+                        <dd>HTTP</dd>
+                        
+                        <dt>Method</dt>
+                        <dd>POST</dd>
+                        
+                        <dt>Authentication</dt>
+                        <dd>None</dd>
+                        
+                        <dt>Encoding</dt>
+                        <dd>UTF-8</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+            
+        <div class="row">
+            <div class="col-sm">
+                <div class="left">
+                    <h2>Query</h2>
+                    <p>Query the API for translations.</p>
+                    <p>Use a subset of the POT format with a <code>msgid</code> for each line you want translated. You may include any number of questions.</p>
+                    <p>Don't include the full set of POT headers as you would in a valid POT file. They will be disregarded.</p>
+                </div>
+            </div>
+            <div class="col-sm dark">
+                <div class="right">
+                    <pre>
+<span class='header'>POST / HTTP/1.1
+Content-Type: application/x-gettext; charset=UTF-8
+Accept-Language: fr-FR</span>
+
+msgid "Rogue Level"
+msgstr ""
+
+msgid "SNEAK ATTACK"
+msgstr ""
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="left">
+                    <h2>Response</h2>
+                    <p>The response is also a subset of PO format. Any lines without a translation will be skipped from the response.</p>
+                    <h4>HTTP Status</h4>
+                    <ul>
+                        <li><b>200</b> &mdash; At least one of the requested lines has a translation.</li>
+                        <li><b>404</b> &mdash; None of the requested lines has a translation.</li>
+                        <li><b>500</b> &mdash; An error occurred.</li>
+                    </ul>
+                    <p>If you receive any other status codes in your response, such as 401 Unauthorized, then they come from a proxy layer and not from the translator itself.</p>
+                </div>
+            </div>
+            <div class="col-sm dark">
+                <div class="right">
+                    <pre>
+<span class='header'>200 OK
+Content-Language: pt-BR
+Content-Type: application/x-gettext; charset=UTF-8</span>
+
+msgid "Rogue Level"
+msgtxt "Nível do Ladino"
+
+msgid "SNEAK ATTACK"
+msgtxt "ATAQUE FURTIVO"
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="left">
+                    <h3>Language</h3>
+                    <p>Use the <code>Accept-Language</code> header to specify the language and locale you're looking for. You can include this heading multiple times to allow multiple options, in which ase more specific languages take precedence.</p>
+                    <p>The response will use the <code>Content-Language</code> header to list the languages for the whole set, but individual responses may vary depending on the translations in the system, in which case each entry will use a <code>Language:</code> meta tag.</p>
+                </div>
+            </div>
+            <div class="col-sm dark">
+                <div class="right">
+                    <pre>
+<span class='header'>Accept-Language: pt-BR
+Accept-Language: pt</span>
+                    </pre>
+
+                    <pre>
+<span class='header'>Content-Language: pt-BR, pt</span>
+
+<span class='comment'>#. Language: pt</span>
+msgid "Rogue Level"
+msgtxt "Nível do Ladino"
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="left">
+                    <h3>Disambiguation</h3>
+                    <p>Sometimes a line may have different translations depending on how it's used. You can use:</p>
+                    <ul>
+                        <li>To translate a part of a line, use a context string <code>msgctxt</code> containing the full line.</li>
+                        <li>To translate a line with an established disambiguator flag, use a <code>msgctxt</code> with the full line followed by the flag in angled brackets <code>&lt;</code> and <code>&gt;</code>.</li>
+                        <li>To translate a line while specifying the source, use a source comment <code class='comment'>#:</code></li>
+                        <li>To translate a line while specifying metadata, use a tag comment <code class='comment'>#.</code></li>
+                    </ul>
+                    <p>The response will mirror the <code>msgctxt</code> fields and comments.</p>
+                </div>
+            </div>
+                
+            <div class="col-sm dark">
+                <div class="right">
+                    <pre>
+<span class="comment"># With a context:</span>
+msgctxt "+4 to attack"
+msgid "to attack"
+msgtxt ""
+
+<span class="comment"># With a disambiguator flag:</span>
+msgctxt "Light &lt;illumination&gt;"
+msgid "Light"
+msgtxt ""
+
+msgctxt "Light &lt;weight&gt;"
+msgid "Light"
+msgtxt ""
+
+<span class="comment"># With a source comment:</span>
+<span class="comment">#: Pathfinder/Core/Rogue.ai</span>
+msgid "Sneak Attack"
+msgtxt ""
+
+<span class="comment"># With a metadata comment:</span>
+<span class="comment">#. Source: Rogue</span>
+msgid "Sneak Attack"
+msgtxt ""
+
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="left">
+                    <h3>Configuration</h3>
+                    <p>The server can be configured to behave differently.</p>
+                </div>
+            </div>
+                
+            <div class="col-sm dark">
+                <div class="right">
+                    <pre>
+api_enable: true
+api_port: 3473
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+  </body>
+</html>
