@@ -422,6 +422,7 @@ func previewExists(language string, source *model.Source) bool {
 	fullPath := config.Config.PDF.Path + "/" + languagePath + "/" + path + ".pdf"
 
 	fi, err := os.Stat(fullPath)
+	fmt.Println("Stat "+fullPath)
 	return err == nil && !fi.IsDir()
 }
 
