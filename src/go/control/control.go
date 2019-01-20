@@ -408,6 +408,7 @@ func previewURL(language string, source *model.Source) template.HTML {
 	path := source.Filepath
 	path = strings.Replace(path, "3.5", "dnd35", 1)
 	path = strings.Replace(path, "Pathfinder", "pathfinder", 1)
+	path = strings.Replace(path, "Starfinder", "starfinder", 1)
 	return template.HTML("/pdf/" + languagePath + "/" + path + ".pdf")
 }
 
@@ -419,6 +420,7 @@ func previewExists(language string, source *model.Source) bool {
 	path := source.Filepath
 	path = strings.Replace(path, "3.5", "dnd35", 1)
 	path = strings.Replace(path, "Pathfinder", "pathfinder", 1)
+	path = strings.Replace(path, "Starfinder", "starfinder", 1)
 	fullPath := config.Config.PDF.Path + "/" + languagePath + "/" + path + ".pdf"
 
 	fi, err := os.Stat(fullPath)
