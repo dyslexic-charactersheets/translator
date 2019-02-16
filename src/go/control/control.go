@@ -399,6 +399,7 @@ func sourceURL(source *model.Source) template.HTML {
 	path := source.Filepath
 	path = strings.Replace(path, "3.5", "dnd35", 1)
 	path = strings.Replace(path, "Pathfinder", "pathfinder", 1)
+	path = strings.Replace(path, "Starfinder", "starfinder", 1)
 	return template.HTML("/pdf/" + path + ".pdf")
 }
 
