@@ -89,7 +89,7 @@ func LoadConfig(initial bool) {
 		Config = config
 	}
 
-	configData, err := ioutil.ReadFile("config.toml")
+	configData, err := ioutil.ReadFile("dist/conf/config.toml")
 	if err != nil {
 		fmt.Println("Error opening config.toml:", err)
 		Config.Fail = true
