@@ -53,7 +53,7 @@ func RunTranslator(host string, debug int) {
 	handler.Handle("/images/", http.FileServer(http.Dir("dist/htdocs")))
 	handler.Handle("/js/", http.FileServer(http.Dir("dist/htdocs")))
 
-	handler.Handle("/pdf/", http.FileServer(http.Dir(config.Config.PDF.Path)))
+	handler.Handle("/pdf/", http.StripPrefix("/pdf/", http.FileServer(http.Dir(config.Config.PDF.Path))))
 
 	handler.HandleFunc("/", defaultHandler)
 
