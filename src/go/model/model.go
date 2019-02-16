@@ -62,7 +62,7 @@ var LanguagePaths map[string]string = map[string]string{
 	"es": "spanish",
 	"pl": "polish",
 	"pt": "portuguese",
-	"br": "brazilian",
+	"br": "brazilian-portuguese",
 	"ru": "russian",
 	"nl": "dutch",
 	"no": "norwegian",
