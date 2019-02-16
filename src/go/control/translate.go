@@ -28,6 +28,7 @@ func SourcesHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate("sources", w, r, func(data *TemplateData) {
 		data.CurrentGame = r.FormValue("game")
 		data.CurrentLevel = r.FormValue("level")
+		data.CurrentFile = r.FormValue("file")
 		data.CurrentShow = r.FormValue("show")
 		data.CurrentSearch = r.FormValue("search")
 
@@ -35,7 +36,17 @@ func SourcesHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil || leveln > 4 || leveln < 1 {
 			leveln = 0
 		}
-		data.Sources = model.GetSourcesAt(data.CurrentGame, leveln, data.CurrentShow)
+
+		if data.CurrentFile != "" {
+			if file := model.GetSourceByPath(data.CurrentFile); file != nil {
+				data.Sources = []*model.Source{ file }
+			} else {
+				data.Sources = []*model.Source{}
+			}
+		} else {
+			data.Sources = model.GetSourcesAt(data.CurrentGame, leveln, data.CurrentShow)
+		}
+		data.AllSources = model.GetSourcesAt(data.CurrentGame, leveln, "")
 		fmt.Println("Writing", len(data.Sources), "sources")
 
 		data.Page = Paginate(r, PageSize, len(data.Sources))
@@ -48,10 +59,17 @@ func EntriesHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate("entries", w, r, func(data *TemplateData) {
 		data.CurrentGame = r.FormValue("game")
 		data.CurrentLevel = r.FormValue("level")
+		data.CurrentFile = r.FormValue("file")
 		data.CurrentShow = r.FormValue("show")
 		data.CurrentSearch = r.FormValue("search")
 
-		data.Entries = model.GetStackedEntries(data.CurrentGame, data.CurrentLevel, data.CurrentShow, data.CurrentSearch, false, "uses", "gb", currentUser)
+		leveln, err := strconv.Atoi(data.CurrentLevel)
+		if err != nil || leveln > 4 || leveln < 1 {
+			leveln = 0
+		}
+		data.AllSources = model.GetSourcesAt(data.CurrentGame, leveln, "")
+
+		data.Entries = model.GetStackedEntries(data.CurrentGame, data.CurrentLevel, data.CurrentFile, data.CurrentShow, data.CurrentSearch, false, "uses", "gb", currentUser)
 		if model.Debug >= 2 { fmt.Println("Loaded", len(data.Entries), "entries") }
 		data.Page = Paginate(r, PageSize, len(data.Entries))
 		if model.Debug >= 2 { fmt.Println("Pagination", data.Page) }
@@ -70,6 +88,7 @@ func TranslationHandler(w http.ResponseWriter, r *http.Request) {
 
 		data.CurrentGame = r.FormValue("game")
 		data.CurrentLevel = r.FormValue("level")
+		data.CurrentFile = r.FormValue("file")
 		data.CurrentShow = r.FormValue("show")
 		data.CurrentSearch = r.FormValue("search")
 		data.CurrentSort = r.FormValue("sort")
@@ -79,7 +98,13 @@ func TranslationHandler(w http.ResponseWriter, r *http.Request) {
 		if data.CurrentSearch != "" {
 			fmt.Println("Searching for:", data.CurrentSearch)
 		}
-		data.Entries = model.GetStackedEntries(data.CurrentGame, data.CurrentLevel, data.CurrentShow, data.CurrentSearch, false, data.CurrentSort, data.CurrentLanguage, currentUser)
+		
+		leveln, err := strconv.Atoi(data.CurrentLevel)
+		if err != nil || leveln > 4 || leveln < 1 {
+			leveln = 0
+		}
+		data.Entries = model.GetStackedEntries(data.CurrentGame, data.CurrentLevel, data.CurrentFile, data.CurrentShow, data.CurrentSearch, false, data.CurrentSort, data.CurrentLanguage, currentUser)
+		data.AllSources = model.GetSourcesAt(data.CurrentGame, leveln, "")
 
 		data.Page = Paginate(r, PageSize, len(data.Entries))
 		data.Entries = data.Entries[data.Page.Offset:data.Page.Slice]

@@ -2,7 +2,6 @@
 
 {{ define "content" }}
 
-<div class='container'>
 <h1><span class="glyphicon glyphicon-globe"></span>&nbsp; Translate</h1>
 
 <form class='form-inline page-options' name='page-options' action='/translate' role='form'>
@@ -36,6 +35,17 @@
 	</div>
 
 	<div class="form-group">
+		<label for='options-file'>File</label>
+		<select id='options-file' name='file' class='form-control'>
+			<option value='' {{ if eq .CurrentFile "" }}selected{{ end }}>All files</option>
+			{{ $currentFile := .CurrentFile }}
+			{{ range $file := .AllSources }}
+			<option value='{{.Filepath}} ' {{ if eq $currentFile .Filepath }}selected{{ end }}>{{.Page}}</option>
+			{{ end }}
+		</select>
+	</div>
+
+	<div class="form-group">
 		<label for='options-show'>Show</label>
 		<select id='options-show' name='show' class='form-control'>
 			<option value='' {{ if eq .CurrentShow "" }}selected{{ end }}>All lines</option>
@@ -60,7 +70,7 @@
 	{{ pagination .Page }}
 </form>
 
-</div>{{/* container */}}
+{{/* container */}}
 
 <form role='form' id='form-translate' class='form-inline'>
 	<input type='hidden' name='language' id='current-language' value='{{ .CurrentLanguage }}'>

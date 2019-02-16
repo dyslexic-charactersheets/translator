@@ -107,7 +107,7 @@ func GetEntriesPartOf(partOf string) []*Entry {
 	return makeEntries(results)
 }
 
-func GetEntriesAt(game string, level int, show, search string, fuzzySearch bool, language string, translator *User) []*Entry {
+func GetEntriesAt(game string, level int, file, show, search string, fuzzySearch bool, language string, translator *User) []*Entry {
 	if game == "" && level == 0 && show == "" && search == "" {
 		return GetEntries()
 	}
@@ -148,6 +148,10 @@ func GetEntriesAt(game string, level int, show, search string, fuzzySearch bool,
 	if level != 0 {
 		sql = sql + " and Level = ?"
 		args = append(args, level)
+	}
+	if file != "" {
+		sql = sql + " and Filepath = ?"
+		args = append(args, file)
 	}
 	if show == "conflicts" {
 		sql = sql + " and Translations.IsConflicted = 1"
@@ -240,6 +244,14 @@ type Source struct {
 
 func GetSourceByID(id string) *Source {
 	result := query("select "+sourceFields+" from Sources where SourceID = ?", id).row(parseSource)
+	if source, ok := result.(Source); ok {
+		return &source
+	}
+	return nil
+}
+
+func GetSourceByPath(path string) *Source {
+	result := query("select "+sourceFields+" from Sources where Filepath = ?", path).row(parseSource)
 	if source, ok := result.(Source); ok {
 		return &source
 	}

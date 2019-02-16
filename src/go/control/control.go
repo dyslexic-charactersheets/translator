@@ -37,11 +37,13 @@ type TemplateData struct {
 	LanguageCompletion map[string][4]int
 	Users              []*model.User
 	UsersByLanguage    map[string][]*model.User
+	AllSources         []*model.Source
 	Sources            []*model.Source
 	Entries            []*model.StackedEntry
 	Translations       []*model.Translation
 	CurrentGame        string
 	CurrentLevel       string
+	CurrentFile        string
 	CurrentShow        string
 	CurrentSearch      string
 	CurrentSort        string

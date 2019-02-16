@@ -48,10 +48,10 @@ func RunTranslator(host string, debug int) {
 	handler.HandleFunc("/api/vote", control.APIVoteHandler)
 	handler.HandleFunc("/api/lookup", control.APILookupHandler)
 
-	handler.Handle("/css/", http.FileServer(http.Dir("web")))
-	handler.Handle("/bootstrap/", http.FileServer(http.Dir("web")))
-	handler.Handle("/images/", http.FileServer(http.Dir("web")))
-	handler.Handle("/js/", http.FileServer(http.Dir("web")))
+	handler.Handle("/css/", http.FileServer(http.Dir("dist/htdocs")))
+	handler.Handle("/bootstrap/", http.FileServer(http.Dir("dist/htdocs")))
+	handler.Handle("/images/", http.FileServer(http.Dir("dist/htdocs")))
+	handler.Handle("/js/", http.FileServer(http.Dir("dist/htdocs")))
 
 	handler.Handle("/pdf/", http.FileServer(http.Dir(config.Config.PDF.Path)))
 

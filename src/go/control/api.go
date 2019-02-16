@@ -66,7 +66,7 @@ func APILookupHandler(w http.ResponseWriter, r *http.Request) {
 	language := r.FormValue("language")
 
 	// find stacked entries matching the search terms
-	results := model.GetStackedEntries("", "0", "", lookup, true, "relevance", language, nil)
+	results := model.GetStackedEntries("", "0", "", "", lookup, true, "relevance", language, nil)
 
 	// get those results with translations
 	translationResults := make([]*model.StackedTranslation, 0, maxTranslations)

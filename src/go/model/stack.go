@@ -121,7 +121,7 @@ func sortStacks(values []*StackedEntry, sortBy, search string) []*StackedEntry {
 	return values
 }
 
-func GetStackedEntries(game, level, show, search string, fuzzySearch bool, sortBy, language string, user *User) []*StackedEntry {
+func GetStackedEntries(game, level, file, show, search string, fuzzySearch bool, sortBy, language string, user *User) []*StackedEntry {
 	leveln, err := strconv.Atoi(level)
 	if err != nil || leveln > 4 || leveln < 1 {
 		leveln = 0
@@ -129,7 +129,7 @@ func GetStackedEntries(game, level, show, search string, fuzzySearch bool, sortB
 
 	// we always pass fuzzy search to the lower layer, so that we can catch cases where the search terms
 	// appear in different parts of the stack
-	entries := GetEntriesAt(game, leveln, show, search, true, language, user)
+	entries := GetEntriesAt(game, leveln, file, show, search, true, language, user)
 	if search != "" {
 		// searching can result in getting only part of a stack
 		// make sure we have *all* of each stack
