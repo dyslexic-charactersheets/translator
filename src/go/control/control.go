@@ -166,7 +166,7 @@ func GetTemplateData(r *http.Request, bodyClass string) TemplateData {
 		Languages:        model.Languages,
 		DisplayLanguages: model.DisplayLanguages,
 		LanguageNames:    model.LanguageNames,
-		LanguagesEnglish: model.LanguageNamesEnglish
+		LanguagesEnglish: model.LanguageNamesEnglish,
 		RecentUsers:      recentUsers,
 	}
 	if currentUser != nil {
