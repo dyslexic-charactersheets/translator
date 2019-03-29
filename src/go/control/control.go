@@ -34,6 +34,7 @@ type TemplateData struct {
 	Languages          []string
 	DisplayLanguages   []string
 	LanguageNames      map[string]string
+	LanguagesEnglish   map[string]string
 	LanguageCompletion map[string][4]int
 	Users              []*model.User
 	UsersByLanguage    map[string][]*model.User
@@ -165,6 +166,7 @@ func GetTemplateData(r *http.Request, bodyClass string) TemplateData {
 		Languages:        model.Languages,
 		DisplayLanguages: model.DisplayLanguages,
 		LanguageNames:    model.LanguageNames,
+		LanguagesEnglish: model.LanguageNamesEnglish
 		RecentUsers:      recentUsers,
 	}
 	if currentUser != nil {
