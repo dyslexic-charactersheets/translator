@@ -19,15 +19,15 @@
 
   <div class='well'>
     <label>Language</label>
-  <p>
     {{ $languageNames := .LanguageNames }}
     {{ $languagesEnglish := .LanguagesEnglish }}
     {{ range $lang := .Languages }}
+    <p>
     <label class="checkbox-inline"><input type='radio' name='language' value='{{ $lang }}' {{ if eq $lang "gb" }}checked{{ end }}>&nbsp;
-      <img src='/images/flags/{{ $lang }}.png'> &nbsp; {{ index $languageNames $lang }} ({{ index $languagesEnglish $lang }}) &nbsp;
+      <img src='/images/flags/{{ $lang }}.png'> &nbsp; <b>{{ index $languageNames $lang }}</b> / {{ index $languagesEnglish $lang }} &nbsp;
     </label>
+    </p>
     {{ end }}
-  </p>
   </div>
 
   <p>

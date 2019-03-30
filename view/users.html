@@ -27,11 +27,12 @@
 
 	{{ $usersByLanguage := .UsersByLanguage }}
 	{{ $languageNames := .LanguageNames }}
+	{{ $languagesEnglish := .LanguagesEnglish }}
 	{{ range $lang := .Languages }}
 		<tr>
 			<td><img src='/images/flags/{{ $lang }}.png'></td>
 			<td></td>
-			<td colspan='6'><b>{{ index $languageNames $lang }}</b></td>
+			<td colspan='6'><b>{{ index $languageNames $lang }}</b> / {{ index $languagesEnglish $lang }}</td>
 		</tr>
 
 		{{ range $user := index $usersByLanguage $lang }}
