@@ -403,7 +403,7 @@ var liveEntriesLit []string = []string{
 func liveEntries() []*StackedEntry {
 	// scan for classes, skills etc
 	strings := make(map[string]signal, 512)
-	for _, game := range []string{"pathfinder", "dnd35"} {
+	for _, game := range []string{"pathfinder", "pathfinder2", "starfinder", "dnd35"} {
 		gameData := ReadGameData(game)
 		if gameData != nil {
 			// All skills

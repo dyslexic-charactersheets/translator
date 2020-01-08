@@ -4,6 +4,9 @@ build:
 run:
 	./run-translator.sh
 
+test:
+	go run src/go/translator.go
+
 log:
 	tailf /var/log/translator
 

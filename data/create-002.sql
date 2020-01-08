@@ -71,3 +71,12 @@ primary key (TranslationID, Voter)
 );
 
 create index Votes_Reverse on Votes (Voter, TranslationID);
+
+create table SearchIndex (
+EntryID bigint not null,
+Term varchar(128) not null,
+primary key (EntryID, Term)
+);
+
+create index SearchIndex_Entry on SearchIndex (EntryID);
+create index SearchIndex_Word on SearchIndex (Term);

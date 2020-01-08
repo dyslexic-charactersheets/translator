@@ -2125,3 +2125,276 @@ using session: map[string]interface {}{}
 URL segments: [bootstrap js bootstrap.min.js]
 Checking URL segment: bootstrap
 Bypassing auth for bootstrap
+Error opening config.toml: open config.toml: no such file or directory
+Starting web server: :9091
+
+
+Processing GET /
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: []
+Checking URL segment: 
+Delivering
+Default handler
+Get current user: marcus.downing@gmail.com
+[db] Error in query: select Email, Password, Secret, Name, IsAdmin, Language, IsLanguageLead from Users where Email = ?
+[db] Error in row(): driver: bad connection
+goroutine 7 [running]:
+runtime/debug.Stack(0x0, 0x0, 0x0)
+	/usr/lib/go-1.6/src/runtime/debug/stack.go:24 +0x80
+runtime/debug.PrintStack()
+	/usr/lib/go-1.6/src/runtime/debug/stack.go:16 +0x18
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.dberr(0x7f688a640028, 0xc82000a490, 0xa0e798, 0x3)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/db.go:51 +0x2b9
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.Query.row(0xae2b20, 0x62, 0xc820164460, 0x1, 0x1, 0xb09af8, 0x0, 0x0)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/db.go:148 +0x346
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.GetUserByEmail(0xc8201685a0, 0x18, 0x2)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/types.go:683 +0x181
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/control.GetCurrentUser(0xc820176000, 0x1)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/control/control.go:148 +0x477
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/server.defaultHandler(0x7f688a5e01f8, 0xc820174780, 0xc820176000)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/server/server.go:73 +0xe1
+net/http.HandlerFunc.ServeHTTP(0xb09b08, 0x7f688a5e01f8, 0xc820174780, 0xc820176000)
+	/usr/lib/go-1.6/src/net/http/server.go:1618 +0x3a
+net/http.(*ServeMux).ServeHTTP(0xc820013d10, 0x7f688a5e01f8, 0xc820174780, 0xc820176000)
+	/usr/lib/go-1.6/src/net/http/server.go:1910 +0x17d
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/server.(*AuthHandler).ServeHTTP(0xc82000bbe0, 0x7f688a5e01f8, 0xc820174780, 0xc820176000)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/server/server.go:270 +0x1d06
+github.com/bpowers/seshcookie.(*SessionHandler).ServeHTTP(0xc8201622a0, 0x7f688a5e0058, 0xc820182000, 0xc820176000)
+	/home/mdowning/go/src/github.com/bpowers/seshcookie/seshcookie.go:359 +0x1ab
+net/http.serverHandler.ServeHTTP(0xc8200d1600, 0x7f688a5e0058, 0xc820182000, 0xc820176000)
+	/usr/lib/go-1.6/src/net/http/server.go:2081 +0x19e
+net/http.(*conn).serve(0xc8200d1680)
+	/usr/lib/go-1.6/src/net/http/server.go:1472 +0xf2e
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.6/src/net/http/server.go:2137 +0x44e
+
+
+Processing GET /login
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [login]
+Checking URL segment: login
+
+
+Processing GET /bootstrap/css/bootstrap.min.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap css bootstrap.min.css]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /bootstrap/css/bootstrap-theme.min.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap css bootstrap-theme.min.css]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /css/translator.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [css translator.css]
+Checking URL segment: css
+Bypassing auth for css
+
+
+Processing GET /js/jquery-2.0.3.min.js
+
+
+Processing GET /bootstrap/js/bootstrap.min.js
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap js bootstrap.min.js]
+Checking URL segment: bootstrap
+URL segments: [js jquery-2.0.3.min.js]
+Checking URL segment: js
+Bypassing auth for js
+Bypassing auth for bootstrap
+
+
+Processing GET /images/favicon.png
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [images favicon.png]
+Checking URL segment: images
+Bypassing auth for images
+
+
+Processing POST /login
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [login]
+Checking URL segment: login
+[db] Error in query: select Email, Password, Secret, Name, IsAdmin, Language, IsLanguageLead from Users where Email = ?
+[db] Error in row(): driver: bad connection
+goroutine 20 [running]:
+runtime/debug.Stack(0x0, 0x0, 0x0)
+	/usr/lib/go-1.6/src/runtime/debug/stack.go:24 +0x80
+runtime/debug.PrintStack()
+	/usr/lib/go-1.6/src/runtime/debug/stack.go:16 +0x18
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.dberr(0x7f688a640028, 0xc82000a490, 0xa0e798, 0x3)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/db.go:51 +0x2b9
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.Query.row(0xae2b20, 0x62, 0xc820250a20, 0x1, 0x1, 0xb09af8, 0x0, 0x0)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/db.go:148 +0x346
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.GetUserByEmail(0xc820252fa0, 0x18, 0xa0b540)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/types.go:683 +0x181
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/server.(*AuthHandler).ServeHTTP(0xc82000bbe0, 0x7f688a5e01f8, 0xc820245770, 0xc8201801c0)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/server/server.go:139 +0xf48
+github.com/bpowers/seshcookie.(*SessionHandler).ServeHTTP(0xc8201622a0, 0x7f688a5e0058, 0xc820148820, 0xc8201801c0)
+	/home/mdowning/go/src/github.com/bpowers/seshcookie/seshcookie.go:359 +0x1ab
+net/http.serverHandler.ServeHTTP(0xc8200d1600, 0x7f688a5e0058, 0xc820148820, 0xc8201801c0)
+	/usr/lib/go-1.6/src/net/http/server.go:2081 +0x19e
+net/http.(*conn).serve(0xc820179780)
+	/usr/lib/go-1.6/src/net/http/server.go:1472 +0xf2e
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.6/src/net/http/server.go:2137 +0x44e
+Unknown user, redirecting
+
+
+Processing GET /login
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [login]
+Checking URL segment: login
+
+
+Processing GET /bootstrap/css/bootstrap.min.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap css bootstrap.min.css]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /bootstrap/css/bootstrap-theme.min.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap css bootstrap-theme.min.css]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /css/translator.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [css translator.css]
+Checking URL segment: css
+Bypassing auth for css
+
+
+Processing GET /js/jquery-2.0.3.min.js
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [js jquery-2.0.3.min.js]
+Checking URL segment: js
+Bypassing auth for js
+
+
+Processing GET /bootstrap/js/bootstrap.min.js
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap js bootstrap.min.js]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /login
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [login]
+Checking URL segment: login
+
+
+Processing GET /bootstrap/css/bootstrap.min.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap css bootstrap.min.css]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /bootstrap/css/bootstrap-theme.min.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap css bootstrap-theme.min.css]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /css/translator.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [css translator.css]
+Checking URL segment: css
+Bypassing auth for css
+
+
+Processing GET /js/jquery-2.0.3.min.js
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [js jquery-2.0.3.min.js]
+Checking URL segment: js
+Bypassing auth for js
+
+
+Processing GET /bootstrap/js/bootstrap.min.js
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap js bootstrap.min.js]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing POST /login
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [login]
+Checking URL segment: login
+[db] Error in query: select Email, Password, Secret, Name, IsAdmin, Language, IsLanguageLead from Users where Email = ?
+[db] Error in row(): Received #1045 error from MySQL server: "Access denied for user ''@'localhost' (using password: NO)"
+goroutine 20 [running]:
+runtime/debug.Stack(0x0, 0x0, 0x0)
+	/usr/lib/go-1.6/src/runtime/debug/stack.go:24 +0x80
+runtime/debug.PrintStack()
+	/usr/lib/go-1.6/src/runtime/debug/stack.go:16 +0x18
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.dberr(0x7f688a5e47a0, 0xc8202b96c0, 0xa0e798, 0x3)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/db.go:51 +0x2b9
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.Query.row(0xae2b20, 0x62, 0xc8202bac60, 0x1, 0x1, 0xb09af8, 0x0, 0x0)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/db.go:148 +0x346
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/model.GetUserByEmail(0xc8202b9540, 0x18, 0xa0b540)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/model/types.go:683 +0x181
+_/home/mdowning/Projects/Character_Sheets/translator/src/go/server.(*AuthHandler).ServeHTTP(0xc82000bbe0, 0x7f688a5e01f8, 0xc8202b7cb0, 0xc820177180)
+	/home/mdowning/Projects/Character Sheets/translator/src/go/server/server.go:139 +0xf48
+github.com/bpowers/seshcookie.(*SessionHandler).ServeHTTP(0xc8201622a0, 0x7f688a5e0058, 0xc820183d40, 0xc820177180)
+	/home/mdowning/go/src/github.com/bpowers/seshcookie/seshcookie.go:359 +0x1ab
+net/http.serverHandler.ServeHTTP(0xc8200d1600, 0x7f688a5e0058, 0xc820183d40, 0xc820177180)
+	/usr/lib/go-1.6/src/net/http/server.go:2081 +0x19e
+net/http.(*conn).serve(0xc820179780)
+	/usr/lib/go-1.6/src/net/http/server.go:1472 +0xf2e
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.6/src/net/http/server.go:2137 +0x44e
+Unknown user, redirecting
+
+
+Processing GET /login
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [login]
+Checking URL segment: login
+
+
+Processing GET /bootstrap/css/bootstrap.min.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap css bootstrap.min.css]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /bootstrap/css/bootstrap-theme.min.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap css bootstrap-theme.min.css]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
+
+
+Processing GET /css/translator.css
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [css translator.css]
+Checking URL segment: css
+Bypassing auth for css
+
+
+Processing GET /js/jquery-2.0.3.min.js
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [js jquery-2.0.3.min.js]
+Checking URL segment: js
+Bypassing auth for js
+
+
+Processing GET /bootstrap/js/bootstrap.min.js
+using session: map[string]interface {}{"user":"marcus.downing@gmail.com"}
+URL segments: [bootstrap js bootstrap.min.js]
+Checking URL segment: bootstrap
+Bypassing auth for bootstrap
