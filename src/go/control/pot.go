@@ -174,117 +174,72 @@ func readPoReferences(comment po.Comment) []poReference {
 }
 
 
+func ExportPoHandler(w http.ResponseWriter, r *http.Request) {
+	language := r.FormValue("language")
+	if language != "" {
+		fmt.Println("Exporting in", language)
+		translations := model.GetPreferredTranslations(language, true)
 
+		messages := make([]po.Message, 0, len(translations))
 
+		for _, translation := range translations {
+			messages = append(messages, po.Message{
+				po.Comment{
+					0,                                   // start line
+					"",                                  // translator comments
+					"",                                  // extracted comments
+					[]string{},                          // references
+					[]int{},                             //     ''
+					[]string{},                          // flags
+					"",                                  // previous context
+					"",                                  // previous untranslated string
+				},
+				"",                                      // msgcontext
+				translation.Entry.FullText,              // msgid
+				"",                                      // plural
+				translation.FullText,                    // msgstr
+				[]string{},                              // plural
+			})
+		}
 
-/*
-type PoEntry struct {
-	msgctxt string
-	msgid string
-	msgstr string
-}
+		poFile := po.File{
+			po.Header{
+				po.Comment{
+					0,                                   // start line
+					"",                                  // translator comments
+					"",                                  // extracted comments
+					[]string{},                          // references
+					[]int{},                             //     ''
+					[]string{},                          // flags
+					"",                                  // previous context
+					"",                                  // previous untranslated string
+				},
+				"dyslexic-charactersheets 0.12.0",       // project version
+				"Marcus Downing <marcus@bang-on.net>",   // report bugs to
+				"",                                      // pot creation date
+				"",                                      // po revision date
+				"",                                      // last translator
+				"",                                      // language team
+				language,                                // language
+				"1.0",                                   // mime version
+				"text/plain; charset=UTF-8",             // content-type
+				"8bit",                                  // content transfer encoding
+				"",                                      // plural-forms
+				"Dyslexic Character Sheets Translator",  // x-generator
+				map[string]string{},                     // others
+			},
+			messages,
+		}
 
-type lastLineEnum int;
-
-const (
-	noLine lastLineEnum = iota + 1
-	msgctxtLine
-	msgidLine
-	msgstrLine
-)
-
-// read a PO translation file or template
-
-func readPo(reader io.Reader) []PoEntry {
-	// regexes
-	tagRx := regexp.MustCompile("#. (.*)\\: (.*)")
-	tcommentRx := regexp.MustCompile("#. (.*)")
-	refRx := regexp.MustCompile("#: (.*)")
-	
-	msgctxtRx := regexp.MustCompile("msgctxt \"(.*)\"")
-	msgidRx := regexp.MustCompile("msgid \"(.*)\"")
-	msgstrRx := regexp.MustCompile("msgstr \"(.*)\"")
-	quoteRx := regexp.MustCompile("\"(.*)\"")
-
-
-	entries := make([]PoEntry, 128)
-
-	basemeta := make([string][]string, 32)
-	meta := make([string][]string, 32)
-	msgctxt := ""
-	msgid := ""
-	msgstr := ""
-
-	scanner := bufio.NewScanner(reader)
-
-	lastLine := noLine
-	primed := false
-	var accum strings.Builder
-
-	pushEntry := func () {
+		data := poFile.String()
 		
-	}
+		w.Header().Set("Content-Encoding", "UTF-8")
+		w.Header().Set("Content-Type", "text/x-gettext-translation; charset=UTF-8")
+		w.Header().Set("Content-Disposition", "attachment; filename=\""+model.LanguageNamesEnglish[language]+".po\"")
 
-	for scanner.Scan() {
-		line := scanner.Text()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("Error reading pot:", err)
-			break
-		}
-
-		// actually read the line!
-		if quoteRx.MatchString(line) {
-			content := quoteRx.FindStringSubmatch()[1]
-			accum.writeString(content)
-		} else {
-			str := accum.String()
-			accum.Reset()
-		}
+		w.Write([]byte(data))
 		
-		if msgctxtRx.MatchString(line) {
-			content := msgctxtRx.FindStringSubmatch()[1]
-			accum.Reset()
-			accum.writeString(content)
-
-			lastLine = msgctxtLine
-			primed = true
-		} else if msgidRx.MatchString(line) {
-			content := msgidRx.FindStringSubmatch()[1]
-			accum.Reset()
-			accum.writeString(content)
-
-			lastLine = msgidLine
-			primed = true
-		} else if msgstrRx.MatchString(line) {
-			content := msgstrRx.FindStringSubmatch()[1]
-			accum.Reset()
-			accum.writeString(content)
-
-			lastLine = msgstrLine
-			primed = true
-		} else if tagRx.Match(line) {
-
-		}
-
-		// ... 
-
-
-		// we found one!
-
-
-		entries = append(entries, PoEntry{
-			msgctxt: msgctxt,
-			msgid: msgid,
-			msgstr: msgstr,
-		})
+	} else {
+		renderTemplate("export", w, r, nil)
 	}
-
-	if primed {
-
-	}
-	
-	file.Close()
-
-	return entries
 }
-*/

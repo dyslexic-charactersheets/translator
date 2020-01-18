@@ -32,6 +32,7 @@ func RunTranslator(host string, debug int) {
 	handler.HandleFunc("/import/progress", control.ImportProgressHandler)
 	handler.HandleFunc("/import/abort", control.ImportAbortHandler)
 	handler.HandleFunc("/export", control.ExportHandler)
+	handler.HandleFunc("/export/po", control.ExportPoHandler)
 	handler.HandleFunc("/live-export", control.LiveExportHandler)
 	handler.HandleFunc("/users", control.UsersHandler)
 	handler.HandleFunc("/users/add", control.UsersAddHandler)

@@ -26,6 +26,21 @@
 	</div>
 </form>
 
+<form method='post' action='/live-export' enctype='multipart/form-data'>
+	<div class='panel panel-info'>
+		<div class="panel-heading"><h3 class="panel-title"><span class="glyphicon glyphicon-cloud-download"></span>&nbsp; Export live translations</h3></div>
+		<div class="panel-body">
+
+			<p>Reads game data and exports translations for skills and class names needed by the live website to apply as sheets are built.</p>
+
+		</div>
+
+		<div class="panel-footer">
+			<button type='submit' class='btn btn-info'><span class="glyphicon glyphicon-cloud-download"></span>&nbsp; Download</button>
+		</div>
+	</div>
+</form>
+
 </div>
 
 <div class='col-sm-4'>
@@ -54,20 +69,25 @@
 
 <div class='col-sm-4'>
 
-<form method='post' action='/live-export' enctype='multipart/form-data'>
-	<div class='panel panel-info'>
-		<div class="panel-heading"><h3 class="panel-title"><span class="glyphicon glyphicon-cloud-download"></span>&nbsp; Export live translations</h3></div>
+	<div class='panel panel-primary'>
+		<div class="panel-heading"><h3 class="panel-title"><span class="glyphicon glyphicon-cloud-download"></span>&nbsp; Export PO translations</h3></div>
 		<div class="panel-body">
 
-			<p>Reads game data and exports translations for skills and class names needed by the live website to apply as sheets are built.</p>
+			<p>Exports the full set of translations for feeding into the library.</p>
 
 		</div>
 
 		<div class="panel-footer">
-			<button type='submit' class='btn btn-info'><span class="glyphicon glyphicon-cloud-download"></span>&nbsp; Download</button>
+			{{ $languageNames := .LanguageNames }}
+			<div class='row'>
+			{{ range $lang := .Languages }}
+				<div class='col-sm-6'>
+					<a class='btn btn-small' href='/export/po?language={{ $lang }}'><img src='/images/flags/{{ $lang }}.png'> &nbsp; {{ index $languageNames $lang }}</a>
+				</div>
+			{{ end }}
+			</div>
 		</div>
 	</div>
-</form>
 
 </div>
 
