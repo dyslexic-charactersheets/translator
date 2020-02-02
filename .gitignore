@@ -4,6 +4,7 @@
 *.so
 translator
 translator.exe
+translator.log
 
 # Folders
 _obj
