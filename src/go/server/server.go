@@ -18,11 +18,10 @@ import (
 const SESSIONKEY = "93Yb8c59aASAf3kfT5xU8wz2GmfP4CbSNdhuvLxAdUqZnThbxuAAZu5AVWUrpsmXz47SYnvDcqr7TfNgLP8CpEpAmzGXNvMu72Scd4EAZGuepTQ7kWENemqr"
 
 func RunTranslator(host string, debug int) {
-	control.Hostname = host
 	model.Debug = debug
 
 	log.Space()
-	log.Log("server", "Starting web server:", control.Hostname)
+	log.Log("server", "Starting web server:", host)
 
 	handler := http.NewServeMux()
 	handler.HandleFunc("/home", control.DashboardHandler)
@@ -277,6 +276,15 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendSecretEmail(user *model.User, secret string) {
+	scheme := "http"
+	if config.Config.Server.SSL {
+		scheme = "https"
+	}
+	host := config.Config.Server.Hostname
+	url := "%s://%s/account/reclaim?email=%s&secret=%s"
+	url = fmt.Sprintf(url, scheme, host, user.Email, secret)
+	log.Log("server", "Recovery URL", url)
+
 	msg := `Subject: Your account at the Character Sheets Translator
 Content-Type: text/plain; charset="UTF-8"
 
@@ -284,11 +292,10 @@ This is your password reclaim email for the Dyslexic Character Sheets Translator
 
 To set your password, click here:
 
-http://%s/account/reclaim?email=%s&secret=%s
 `
-	msg = fmt.Sprintf(msg, control.Hostname, user.Email, secret)
+	msg = msg + url
 
-	log.Log("server", "Sending message to", user.Email, "\n", msg)
+	log.Log("server", "Sending message to", user.Email)
 
 	if ok := config.SendMail(user.Email, msg); ok {
 		log.Log("server", "Sent password reclaim email to:", user.Email)

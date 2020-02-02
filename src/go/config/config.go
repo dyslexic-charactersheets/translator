@@ -31,6 +31,7 @@ type Configuration struct {
 type serverConfig struct {
 	Hostname string `toml:"hostname"`
 	Port     int    `toml:"port"`
+	SSL      bool   `toml:"ssl"`
 }
 
 type pdfConfig struct {

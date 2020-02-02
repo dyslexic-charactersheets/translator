@@ -20,8 +20,6 @@ import (
 	"time"
 )
 
-var Hostname string
-
 type TemplateData struct {
 	BodyClass       string
 	CurrentUser     *model.User
