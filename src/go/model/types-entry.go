@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	// "encoding/hex"
 	// "encoding/binary"
-	"fmt"
+	"../log"
 	// "github.com/ziutek/mymysql/mysql"
 	"strings"
 )
@@ -33,19 +33,19 @@ func (entry *Entry) ID() uint64 {
 
 func DeleteAllEntrySources() {
 	if Debug >= 2 {
-		fmt.Println(" ***** Deleting ALL entry sources")
+		log.Warn("types:entry", " ***** Deleting ALL entry sources")
 	}
 	// if ok := query("delete from Entries").exec(); !ok {
-	// 	fmt.Println(" ***** Error deleting entries")
+	// 	log.Warn("types:entry", " ***** Error deleting entries")
 	// }
 	if ok := query("delete from Sources").exec(); !ok {
-		fmt.Println(" ***** Error deleting sources")
+		log.Warn("types:entry", " ***** Error deleting sources")
 	}
 	if ok := query("delete from EntrySources").exec(); !ok {
-		fmt.Println(" ***** Error deleting entrysources")
+		log.Warn("types:entry", " ***** Error deleting entrysources")
 	}
 	if Debug >= 2 {
-		fmt.Println(" ***** Deleted ALL entry sources")
+		log.Warn("types:entry", " ***** Deleted ALL entry sources")
 	}
 }
 
@@ -54,7 +54,7 @@ const entryFields = "Original, PartOf"
 func parseEntry(rows *sql.Rows) (Result, error) {
 	e := Entry{}
 	err := rows.Scan(&e.Original, &e.PartOf)
-	// fmt.Println("Entry ID: " + e.ID() + " (" + string(len(e.ID())) + ")")
+	// log.Log("types:entry", "Entry ID: " + e.ID() + " (" + string(len(e.ID())) + ")")
 	return e, err
 }
 
@@ -145,7 +145,7 @@ func GetEntriesAt(game string, level int, file, show, search string, fuzzySearch
 	// }
 	if search != "" {
 		searchTerms := strings.Split(search, " ")
-		fmt.Println("Searching for:", search)
+		log.Log("type:entry", "Searching for:", search)
 
 		if fuzzySearch {
 			// todo make it more fuzzy?
@@ -177,7 +177,7 @@ func GetEntriesAt(game string, level int, file, show, search string, fuzzySearch
 	} else if show == "untranslated" {
 		sql = sql + " having count(Translations.Translation) = 0"
 	}
-	fmt.Println("Get entries:", sql)
+	log.Log("types:entry", "Get entries:", sql)
 	results := query(sql, args...).rows(parseEntry)
 	return makeEntries(results)
 }

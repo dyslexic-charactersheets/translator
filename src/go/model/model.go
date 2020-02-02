@@ -2,7 +2,7 @@ package model
 
 import (
 	"golang.org/x/crypto/bcrypt"
-	"fmt"
+	"../log"
 	"math/rand"
 	// "sort"
 	// "strconv"
@@ -108,7 +108,7 @@ func GetLanguageCompletion() map[string][4]int {
 				if totals[i-1] > 0 {
 					values[i-1] = 100 * count / totals[i-1]
 				}
-				fmt.Println("Completion of", LanguageNames[lang], "@", i, "=", count, "/", totals[i-1])
+				log.Log("model", "Completion of", LanguageNames[lang], "@", i, "=", count, "/", totals[i-1])
 			}
 			completion[lang] = values
 		}
@@ -149,18 +149,18 @@ func (user *User) GenerateSecret() string {
 
 	bytes, err := bcrypt.GenerateFromPassword([]byte(base), bcrypt.MinCost)
 	if err != nil {
-		fmt.Println("Error generating secret hash:", err)
+		log.Error("model", "Error generating secret hash:", err)
 		return ""
 	}
 	secret := string(bytes)
 	// secret = secret[7:]
-	fmt.Println("Generate secret:", secret)
+	log.Log("model", "Generate secret:", secret)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(secret), 12)
 	if err != nil {
-		fmt.Println("Error generating secret hash:", err)
+		log.Error("model", "Error generating secret hash:", err)
 	}
-	fmt.Println("Generate secret: hash:", string(hash))
+	log.Log("model", "Generate secret: hash:", string(hash))
 	user.Secret = string(hash)
 	user.Save()
 

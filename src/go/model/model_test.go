@@ -2,11 +2,11 @@ package model
 
 import (
 	"testing"
-	"fmt"
+	"../log"
 )
 
 func TestEntryID(t *testing.T) {
 	entry := Entry{"Level", ""}
-	fmt.Println("ID:", entry.ID())
+	log.Log("test", "ID:", entry.ID())
 	// Output ID: 2698725818
 }

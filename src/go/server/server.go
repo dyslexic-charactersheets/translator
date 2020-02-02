@@ -4,6 +4,7 @@ import (
 	"../config"
 	"../model"
 	"fmt"
+	"../log"
 	// "io/ioutil"
 	"../control"
 	"golang.org/x/crypto/bcrypt"
@@ -20,7 +21,8 @@ func RunTranslator(host string, debug int) {
 	control.Hostname = host
 	model.Debug = debug
 
-	fmt.Println("Starting web server:", control.Hostname)
+	log.Space()
+	log.Log("server", "Starting web server:", control.Hostname)
 
 	handler := http.NewServeMux()
 	handler.HandleFunc("/home", control.DashboardHandler)
@@ -64,14 +66,14 @@ func RunTranslator(host string, debug int) {
 
 	listenPort := ":"+strconv.Itoa(config.Config.Server.Port)
 	if err := http.ListenAndServe(listenPort, sessionHandler); err != nil {
-		fmt.Printf("Error in ListenAndServe:", err)
+		log.Log("server", "Error in ListenAndServe:", err)
 	}
 
-	fmt.Println("Done.")
+	log.Log("server", "Done.")
 }
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Default handler")
+	log.Log("server", "Default handler")
 	user := control.GetCurrentUser(r)
 	if user == nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -93,20 +95,22 @@ type ReclaimFormData struct {
 
 func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if model.Debug >= 1 {
-		fmt.Println(" --", model.QueryCount, "database queries so far")
+		log.Log("server", " -- %d database queries so far", model.QueryCount)
 	}
 	session := seshcookie.Session.Get(r)
-	fmt.Println("\n\nProcessing", r.Method, r.URL.Path)
-	fmt.Printf("using session: %#v\n", session)
+
+	log.Space()
+	log.Log("server", "Processing", r.Method, r.URL.Path)
+	log.Log("server", "Using session: %#v\n", session)
 
 	// bypass auth for static files
 	segments := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
-	fmt.Println("URL segments:", segments)
+	log.Log("server", "URL segments:", segments)
 	first := segments[0]
-	fmt.Println("Checking URL segment:", first)
+	log.Log("server", "Checking URL segment:", first)
 	switch first {
 	case "css", "bootstrap", "images", "js", "pdf":
-		fmt.Println("Bypassing auth for", first)
+		log.Log("server", "Bypassing auth for", first)
 		h.Handler.ServeHTTP(w, r)
 		return
 	}
@@ -119,10 +123,10 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			user := model.GetUserByEmail(email)
 			if user != nil {
 				// actually become that user
-				fmt.Println("Masquerading as user:", user.Email)
+				log.Log("server", "Masquerading as user:", user.Email)
 				session["user"] = user.Email
 				session["masquerade"] = currentUser.Email
-				fmt.Printf("altered session: %#v\n", session)
+				log.Log("server", "altered session: %#v\n", session)
 				http.Redirect(w, r, "/home", http.StatusFound)
 				return
 			}
@@ -135,31 +139,31 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		err := r.ParseForm()
 		if err != nil {
-			fmt.Printf("Error '%s' parsing form for %#v\n", err, r)
+			log.Error("server", "Error '%s' parsing form for %#v\n", err, r)
 		}
 		email := r.Form.Get("email")
 		user := model.GetUserByEmail(email)
 		password := r.Form.Get("password")
 
 		if user == nil {
-			fmt.Println("Unknown user, redirecting")
+			log.Error("server", "Unknown user, redirecting")
 			http.Redirect(w, r, "/login", 303)
 			return
 		}
 		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-			fmt.Println("Password incorrect, redirecting", err)
+			log.Error("server", "Password incorrect, redirecting", err)
 			http.Redirect(w, r, "/login", 303)
 			return
 		}
 
-		fmt.Printf("Authorized %s\n", user.Name)
+		log.Log("server", "Authorized %s\n", user.Name)
 		control.PingUser(user.Email)
 		session["user"] = user.Email
 		http.Redirect(w, r, "/home", http.StatusFound)
 		return
 	case "/logout":
 		if email, ok := session["user"].(string); ok {
-			fmt.Printf("Logging out %s\n", email)
+			log.Warn("server", "Logging out %s\n", email)
 		}
 		delete(session, "user")
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -184,7 +188,7 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/account/reclaim":
 		err := r.ParseForm()
 		if err != nil {
-			fmt.Printf("Error '%s' parsing form for %#v\n", err, r)
+			log.Error("server", "Error '%s' parsing form for %#v\n", err, r)
 		}
 		email := r.Form.Get("email")
 		secret := r.Form.Get("secret")
@@ -204,13 +208,13 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			fmt.Println("Account reclaim: Comparing secret", secret)
-			fmt.Println("Account reclaim: Against hash", user.Secret)
+			log.Log("server", "Account reclaim: Comparing secret", secret)
+			log.Log("server", "Account reclaim: Against hash", user.Secret)
 			if err := bcrypt.CompareHashAndPassword([]byte(user.Secret), []byte(secret)); err == nil {
 				password := r.Form.Get("password")
 				password2 := r.Form.Get("password2")
 				if password != "" && password == password2 {
-					fmt.Println("Account reclaim: Setting password")
+					log.Log("server", "Account reclaim: Setting password")
 					hash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 					if err == nil {
 						user.Password = string(hash)
@@ -226,7 +230,7 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			} else {
-				fmt.Println("Account reclaim: Incorrect:", err)
+				log.Error("server", "Account reclaim: Incorrect:", err)
 				http.Redirect(w, r, "/account/reclaim/incorrect", http.StatusFound)
 				return
 			}
@@ -237,15 +241,15 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if user == nil {
-				fmt.Println("Account reclaim: Unknown user:", email)
+				log.Error("server", "Account reclaim: Unknown user:", email)
 				http.Redirect(w, r, "/account/reclaim/nouser", http.StatusFound)
 				return
 			}
 
-			fmt.Println("Account reclaim: Comparing secret", secret)
-			fmt.Println("Account reclaim: Against hash", user.Secret)
+			log.Log("server", "Account reclaim: Comparing secret", secret)
+			log.Log("server", "Account reclaim: Against hash", user.Secret)
 			if err := bcrypt.CompareHashAndPassword([]byte(user.Secret), []byte(secret)); err == nil {
-				fmt.Println("Account reclaim: Showing password form")
+				log.Log("server", "Account reclaim: Showing password form")
 				data := ReclaimFormData{
 					Email:  email,
 					Secret: secret,
@@ -254,7 +258,7 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				t.Execute(w, data)
 				return
 			} else {
-				fmt.Println("Account reclaim: Incorrect:", err)
+				log.Error("server", "Account reclaim: Incorrect:", err)
 				http.Redirect(w, r, "/account/reclaim/incorrect", http.StatusFound)
 				return
 			}
@@ -262,12 +266,12 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, ok := session["user"]; !ok {
-		fmt.Printf("Not logged in, redirecting to login")
+		log.Warn("server", "Not logged in, redirecting to login")
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
-	fmt.Println("Delivering")
+	log.Log("server", "Delivering")
 	control.PingCurrentUser(r)
 	h.Handler.ServeHTTP(w, r)
 }
@@ -284,9 +288,9 @@ http://%s/account/reclaim?email=%s&secret=%s
 `
 	msg = fmt.Sprintf(msg, control.Hostname, user.Email, secret)
 
-	fmt.Println("Sending message to", user.Email, "\n", msg)
+	log.Log("server", "Sending message to", user.Email, "\n", msg)
 
 	if ok := config.SendMail(user.Email, msg); ok {
-		fmt.Println("Sent password reclaim email to:", user.Email)
+		log.Log("server", "Sent password reclaim email to:", user.Email)
 	}
 }

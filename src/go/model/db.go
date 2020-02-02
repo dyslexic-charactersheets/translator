@@ -3,7 +3,7 @@ package model
 import (
 	"../config"
 	"database/sql"
-	"fmt"
+	"../log"
 	"strings"
 	"runtime/debug"
 )
@@ -20,7 +20,7 @@ func init() {
 	db, err = config.Config.Database.Open()
 
 	if err != nil {
-		fmt.Println("Error connecting to database:", err)
+		log.Error("db", "Error connecting to database:", err)
 	}
 }
 
@@ -28,7 +28,7 @@ func WithDB(f func(tx *sql.Tx)) {
 	// connect to database
 	tx, err := db.Begin()
 	if err != nil {
-		fmt.Println("Error connecting to database:", err)
+		log.Error("db", "Error connecting to database:", err)
 		return
 	}
 
@@ -46,21 +46,21 @@ type Result interface {
 }
 
 func dberr(err error, context string) {
-	fmt.Println("[db] Error in query:", lastQuery.sql)
-	fmt.Println("[db] Error in "+context+"():", err)
+	log.Error("db", "Error in query:", lastQuery.sql)
+	log.Error("db", "Error in "+context+"():", err)
 	debug.PrintStack()
 }
 
 func query(query string, args ...interface{}) Query {
 	if Debug >= 2 {
-		fmt.Println("Query:", query, args)
+		log.Log("db", "Query:", query, args)
 	}
 	return Query{query, args}
 }
 
 func (query Query) exists() bool {
 	if Debug >= 2 {
-		fmt.Println("Exists:", query.sql, query.args)
+		log.Log("db", "Exists:", query.sql, query.args)
 	}
 	exists := false
 	lastQuery = query
@@ -77,7 +77,7 @@ func (query Query) exists() bool {
 
 func (query Query) count() int {
 	if Debug >= 2 {
-		fmt.Println("Count:", query.sql, query.args)
+		log.Log("db", "Count:", query.sql, query.args)
 	}
 	lastQuery = query
 	QueryCount++
@@ -97,7 +97,7 @@ func (query Query) count() int {
 
 func (query Query) exec() bool {
 	if Debug >= 2 {
-		fmt.Println("Exec:", query.sql, query.args)
+		log.Log("db", "Exec:", query.sql, query.args)
 	}
 	lastQuery = query
 	QueryCount++
@@ -111,7 +111,7 @@ func (query Query) exec() bool {
 
 func (query Query) rows(f func(*sql.Rows) (Result, error)) []Result {
 	if Debug >= 2 {
-		fmt.Println("Query:", query.sql, query.args)
+		log.Log("db", "Query:", query.sql, query.args)
 	}
 	lastQuery = query
 	QueryCount++
@@ -132,14 +132,14 @@ func (query Query) rows(f func(*sql.Rows) (Result, error)) []Result {
 		}
 	}
 	if Debug >= 2 {
-		fmt.Println("Found", len(results), "results")
+		log.Log("db", "Found", len(results), "results")
 	}
 	return results
 }
 
 func (query Query) row(f func(*sql.Rows) (Result, error)) Result {
 	if Debug >= 2 {
-		fmt.Println("Query:", query.sql, query.args)
+		log.Log("db", "Query:", query.sql, query.args)
 	}
 	lastQuery = query
 	QueryCount++
@@ -170,14 +170,14 @@ func RecordExists(table string, keyfields map[string]interface{}) bool {
 	}
 	sql := "select 1 from " + table + " where " + strings.Join(conditions, " and ")
 	if Debug >= 2 {
-		fmt.Println("Checking ", table, ":", sql, args)
+		log.Log("db", "Checking ", table, ":", sql, args)
 	}
 	return query(sql, args...).exists()
 }
 
 func saveRecord(table string, keyfields, fields map[string]interface{}) bool {
 	if Debug >= 2 {
-		fmt.Println("Saving record")
+		log.Log("db", "Saving record")
 	}
 
 	update := RecordExists(table, keyfields)
@@ -187,13 +187,13 @@ func saveRecord(table string, keyfields, fields map[string]interface{}) bool {
 	if update {
 		if len(fields) == 0 {
 			if Debug >= 2 {
-				fmt.Println("Record exists, skipping")
+				log.Log("db", "Record exists, skipping")
 			}
 			return true
 		}
 
 		if Debug >= 2 {
-			fmt.Println("Record exists, updating")
+			log.Log("db", "Record exists, updating")
 		}
 		names := make([]string, 0, len(fields))
 		for key, value := range fields {
@@ -209,7 +209,7 @@ func saveRecord(table string, keyfields, fields map[string]interface{}) bool {
 		sql = "update " + table + " set " + strings.Join(names, ", ") + " where " + strings.Join(conditions, " and ")
 	} else {
 		if Debug >= 2 {
-			fmt.Println("Record doesn't exist, inserting")
+			log.Log("db", "Record doesn't exist, inserting")
 		}
 		names := make([]string, 0, len(keyfields)+len(fields))
 		qs := make([]string, 0, len(keyfields)+len(fields))
@@ -238,7 +238,7 @@ func deleteRecord(table string, keyfields map[string]interface{}) {
 	}
 	sql := "delete from " + table + " where " + strings.Join(conditions, " and ")
 	if Debug >= 2 {
-		fmt.Println("Deleting ", table, ":", sql, args)
+		log.Warn("db", "Deleting ", table, ":", sql, args)
 	}
 	query(sql, args...).exec()
 }

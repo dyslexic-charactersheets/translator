@@ -2,7 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
+	"../log"
 )
 
 type signal struct{}
@@ -430,7 +430,7 @@ func liveEntries() []*StackedEntry {
 		entries = append(entries, &entry)
 	}
 	stacked := stackEntries(entries)
-	fmt.Println("Found", len(entries), "entries to translate")
+	log.Log("live", "Found", len(entries), "entries to translate")
 	return stacked
 }
 
@@ -456,7 +456,7 @@ func GetLiveTranslations() []byte {
 				}
 			}
 		}
-		fmt.Println(" -", language, "-", len(languageTranslations), "translations")
+		log.Log("live", " -", language, "-", len(languageTranslations), "translations")
 
 		if len(languageTranslations) > 0 {
 			liveTranslations.Languages = append(liveTranslations.Languages, LiveTranslationsLanguage{
@@ -465,7 +465,7 @@ func GetLiveTranslations() []byte {
 			})
 		}
 	}
-	// fmt.Println("Exporting:", liveTranslations)
+	log.Log("live", "Exporting:", liveTranslations)
 	return liveTranslations.export()
 }
 

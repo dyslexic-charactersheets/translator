@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	// "encoding/hex"
 	// "encoding/binary"
-	"fmt"
+	"../log"
 	// "github.com/ziutek/mymysql/mysql"
 	// "strings"
 )
@@ -99,7 +99,7 @@ func GetSourcesAt(game string, level int, show string) []*Source {
 			" inner join Translations on EntrySources.EntryID = Translations.EntryID)"
 	}
 
-	fmt.Println("Get entries:", sql)
+	log.Log("types:source", "Get entries:", sql)
 	results := query(sql, args...).rows(parseSource)
 
 	sources := make([]*Source, 0, len(results))

@@ -3,7 +3,7 @@ package model
 import (
 	"io/ioutil"
 	"encoding/json"
-	"fmt"
+	"../log"
 	"path/filepath"
 	"../config"
 )
@@ -80,10 +80,10 @@ type GameGMData struct {
 func ReadGameData(game string) *GameData {
 	filename := config.Config.PDF.Path + "/data/"+game+".json"
 	path, err := filepath.Abs(filename)
-	fmt.Println("Reading file:", path)
+	log.Log("gamedata", "Reading file:", path)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Println("Error reading file", err)
+		log.Error("gamedata", "Error reading file", err)
 		return nil
 	}
 
