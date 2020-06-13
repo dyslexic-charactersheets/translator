@@ -6,13 +6,16 @@
 		<a href='https://github.com/dyslexic-charactersheets'><img src='/images/github-logo.png' width='240'></a>
 	</div>
 	<div class="panel-footer">
+		<a href='https://github.com/dyslexic-charactersheets/lib-charactersheets'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Library</a>
+	</div>
+	<div class="panel-footer">
 		<a href='https://github.com/dyslexic-charactersheets/pages'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Pages</a>
 	</div>
 	<div class="panel-footer">
 		<a href='https://github.com/dyslexic-charactersheets/iconics'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Iconics</a>
 	</div>
 	<div class="panel-footer">
-		<a href='https://github.com/dyslexic-charactersheets/assets'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; PDF export</a>
+		<a href='https://github.com/dyslexic-charactersheets/assets'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Assets</a>
 	</div>
 	<div class="panel-footer">
 		<a href='https://github.com/dyslexic-charactersheets/website'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Website</a>
