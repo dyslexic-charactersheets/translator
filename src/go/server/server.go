@@ -64,6 +64,7 @@ func RunTranslator(host string, debug int) {
 	sessionHandler := seshcookie.NewSessionHandler(&authHandler, SESSIONKEY, nil)
 
 	listenPort := ":"+strconv.Itoa(config.Config.Server.Port)
+	log.Log("server", "Listening on port:", listenPort)
 	if err := http.ListenAndServe(listenPort, sessionHandler); err != nil {
 		log.Log("server", "Error in ListenAndServe:", err)
 	}

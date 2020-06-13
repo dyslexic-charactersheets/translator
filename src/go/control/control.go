@@ -49,12 +49,6 @@ type TemplateData struct {
 	ProgressPercent    int
 	ProgressID         int
 
-	NumIssues           int
-	Issues              []Issue
-	NumWebsiteIssues    int
-	WebsiteIssues       []Issue
-	NumTranslatorIssues int
-	TranslatorIssues    []Issue
 	DevLoginURL         string
 }
 

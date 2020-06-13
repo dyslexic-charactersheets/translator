@@ -7,14 +7,14 @@ import (
 	"crypto/sha256"
 	"fmt"
 	// "github.com/bpowers/seshcookie"
-	"encoding/json"
+	// "encoding/json"
 	"encoding/hex"
-	"io/ioutil"
+	// "io/ioutil"
 	"html/template"
 	"net/http"
-	"strings"
+	// "strings"
 	// "net/url"
-	"github.com/russross/blackfriday"
+	// "github.com/russross/blackfriday"
 )
 
 func DashboardHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,9 +22,6 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 
 	renderTemplate("home", w, r, func(data *TemplateData) {
 		data.LanguageCompletion = model.GetLanguageCompletion()
-		data.Issues, data.NumIssues = GetGithubIssues()
-		data.WebsiteIssues, data.NumWebsiteIssues = GetWebsiteIssues()
-		data.TranslatorIssues, data.NumTranslatorIssues = GetTranslatorIssues()
 		data.DevLoginURL = GetDevLoginURL(r)
 	})
 }
@@ -230,24 +227,6 @@ type Issue struct {
 // 	Color string `json:"color"`
 // }
 
-func GetGithubIssues() ([]Issue, int) {
-	issues, num := getGithubAPIIssues("marcusatbang/charactersheets")
-	// issues, num := getGithubAPIIssues("dyslexic-charactersheets/pages")
-	return issues, num
-}
-
-func GetWebsiteIssues() ([]Issue, int) {
-	issues, num := getGithubAPIIssues("marcusatbang/charactersheets-website")
-	// issues, num := getGithubAPIIssues("dyslexic-charactersheets/website")
-	return issues, num
-}
-
-func GetTranslatorIssues() ([]Issue, int) {
-	issues, num := getGithubAPIIssues("marcusatbang/charactersheets-translator")
-	// issues, num := getGithubAPIIssues("dyslexic-charactersheets/translator")
-	return issues, num
-}
-
 func GetDevLoginURL(r *http.Request) string {
 	base := config.Config.Dev.DevLoginURL
 	sharedSecret := config.Config.Dev.SharedSecret
@@ -265,69 +244,4 @@ func GetDevLoginURL(r *http.Request) string {
 	signature := hex.EncodeToString(hash)
 
 	return base+"?login="+token+":"+signature
-}
-
-func getGithubAPIIssues(repo string) ([]Issue, int) {
-	resp, err := http.Get("https://api.github.com/repos/"+repo+"/issues?state=open&sort=updated&access_token="+config.Config.Github.AccessToken)
-	if err != nil {
-		fmt.Println("Error fetching issues from GitHub:", err)
-		return []Issue{}, 0
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading issues from GitHub:", err)
-		return []Issue{}, 0
-	}
-
-	// fmt.Println(string(body))
-	issues := make([]Issue, 0)
-	err = json.Unmarshal(body, &issues)
-	if err != nil {
-		fmt.Println("Error decoding issues from GitHub:", err)
-		return []Issue{}, 0
-	}
-	numIssues := len(issues)
-	if len(issues) > 30 {
-		issues = issues[0:30]
-	}
-
-	for i, issue := range issues {
-		issues[i].URL = strings.Replace(issue.URL, "https://api.github.com/repos/", "https://www.github.com/", 1)
-
-		if issue.SummaryMarkdown != "" {
-			html := blackfriday.MarkdownCommon([]byte(issue.SummaryMarkdown))
-			if html != nil {
-				issues[i].SummaryHTML = template.HTML(html)
-			}
-		}
-		// if issue.SummaryMarkdown != "" {
-		// 	fmt.Println("Parsing Markdown:", issue.SummaryMarkdown)
-		// 	resp, err = http.PostForm("https://api.github.com/markdown", url.Values{"text": {issue.SummaryMarkdown}})
-		// 	if err != nil {
-		// 		fmt.Println("Error parsing Markdown:", err)
-		// 	} else {
-		// 		html, err := ioutil.ReadAll(resp.Body)
-		// 		resp.Body.Close()
-		// 		if err != nil {
-		// 			fmt.Println("Error parsing Markdown:", err)
-		// 		} else {
-		// 			issues[i].SummaryHTML = string(html)
-		// 			fmt.Println("Parsed into HTML:", issues[i].SummaryHTML)
-		// 		}
-		// 	}
-		// }
-
-		for _, label := range issue.Labels {
-			fmt.Println("Located label:", label.Name)
-			if label.Name == "bug" {
-				issues[i].CssClass = "danger"
-			} else if label.Name == "enhancement" {
-				issues[i].CssClass = "success"
-			}
-		}
-	}
-
-	fmt.Println("Loaded", len(issues), "issues from GitHub")
-	return issues, numIssues
 }
