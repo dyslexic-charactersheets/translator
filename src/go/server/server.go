@@ -51,6 +51,7 @@ func RunTranslator(host string, debug int) {
 	handler.HandleFunc("/api/vote", control.APIVoteHandler)
 	handler.HandleFunc("/api/lookup", control.APILookupHandler)
 
+	// static files
 	handler.Handle("/css/", http.FileServer(http.Dir("dist/htdocs")))
 	handler.Handle("/bootstrap/", http.FileServer(http.Dir("dist/htdocs")))
 	handler.Handle("/images/", http.FileServer(http.Dir("dist/htdocs")))
@@ -142,6 +143,7 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Error("server", "Error '%s' parsing form for %#v\n", err, r)
 		}
 		email := r.Form.Get("email")
+		log.Log("server", "Login attempt", email);
 		user := model.GetUserByEmail(email)
 		password := r.Form.Get("password")
 

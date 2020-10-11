@@ -4,6 +4,7 @@ import (
 	"../model"
 	"io/ioutil"
 	"fmt"
+	// "../log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -92,11 +93,40 @@ func importPot(data []byte, progress *TaskProgress) {
 		entry.Save()
 
 		for _, ref := range messageRefs {
+			level := 1
+			if sources, ok := messageMeta["Source"]; ok {
+				level1 := false
+				level2 := false
+				level3 := false
+				for _, source := range sources {
+					for _, src := range strings.Split(source, ",") {
+						src = strings.TrimSpace(src)
+						level = 4  // if there's at least one source, don't default to core any more
+						switch src {
+						case "Core Rulebook":
+							level1 = true
+						case "Advanced Player's Guide", "Secrets of Magic":
+							level2 = true
+						case "Lost Omens World Guide", "Lost Omens Chatracter Guide", "Lost Omens Gods and Magic", "Lost Omens Legends", "Lost Omens Pathfinder Society Guide":
+							level3 = true
+						}
+					}
+				}
+				if level1 {
+					level = 1
+				} else if level2 {
+					level = 2
+				} else if level3 {
+					level = 3
+				} else {
+					level = 4
+				}
+			}
 			source := &model.Source{
 				Filepath: "Pathfinder 2e/"+ref.File,
 				Page:     "",
 				Volume:   "",
-				Level:    1,
+				Level:    level,
 				Game:     "pathfinder2",
 			}
 			source.Save()
@@ -130,7 +160,7 @@ func mergeMeta(left, right map[string][]string) map[string][]string {
 }
 
 func readPoMetaLines(str string) map[string][]string {
-	lines := strings.Split(str, `\n`)
+	lines := strings.Split(str, "\n")
 	meta := make(map[string][]string, len(lines))
 
 	metaRx := regexp.MustCompile("(.*?): (.*)");
