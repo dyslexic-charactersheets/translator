@@ -99,12 +99,14 @@ func GetSourcesAt(game string, level int, show string) []*Source {
 			" inner join Translations on EntrySources.EntryID = Translations.EntryID)"
 	}
 
+	sql = sql + " order by Page"
+
 	log.Log("types:source", "Get entries:", sql)
 	results := query(sql, args...).rows(parseSource)
 
 	sources := make([]*Source, 0, len(results))
 	for _, result := range results {
-		if source, ok := result.(Source); ok {
+		if source, ok := result.(Source); ok && source.Page != "" {
 			sources = append(sources, &source)
 		}
 	}

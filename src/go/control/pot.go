@@ -4,7 +4,7 @@ import (
 	"../model"
 	"io/ioutil"
 	"fmt"
-	// "../log"
+	"../log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -62,21 +62,21 @@ func importPot(data []byte, progress *TaskProgress) {
 	progress.Progress = 1
 
 	// header metadata
-	// fmt.Println("POT:", poFile.MimeHeader.TranslatorComment)
+	log.Log("POT", "Translator Comment:", poFile.MimeHeader.TranslatorComment)
 
 	globalMeta := readPoMetaLines(poFile.MimeHeader.ExtractedComment)
-	// fmt.Printf(" - %v\n", globalMeta)
+	log.Log("POT", "Global meta: %v", globalMeta)
 
 	// messages
 	for i, message := range poFile.Messages {
 		progress.Progress = 2 + i
-		// fmt.Println("MSG:", message.MsgId)
+		log.Log("POT", "MSG:", message.MsgId)
 
 		messageMeta := readPoMetaLines(message.Comment.ExtractedComment)
 		messageMeta = mergeMeta(messageMeta, globalMeta)
 		messageRefs := readPoReferences(message.Comment)
-		// fmt.Printf(" - meta: %v\n", messageMeta)
-		// fmt.Printf(" - refs: %v\n", messageRefs)
+		log.Log("POT", " - meta: %v", messageMeta)
+		log.Log("POT", " - refs: %v", messageRefs)
 
 		// check if the message is part of a whole
 		context := message.MsgContext
@@ -94,6 +94,7 @@ func importPot(data []byte, progress *TaskProgress) {
 
 		for _, ref := range messageRefs {
 			level := 1
+			volume := ""
 			if sources, ok := messageMeta["Source"]; ok {
 				level1 := false
 				level2 := false
@@ -102,6 +103,7 @@ func importPot(data []byte, progress *TaskProgress) {
 					for _, src := range strings.Split(source, ",") {
 						src = strings.TrimSpace(src)
 						level = 4  // if there's at least one source, don't default to core any more
+						volume = src
 						switch src {
 						case "Core Rulebook":
 							level1 = true
@@ -122,10 +124,16 @@ func importPot(data []byte, progress *TaskProgress) {
 					level = 4
 				}
 			}
+			log.Log("POT", "Unit:", messageMeta["Unit"]);
+			fileParts := strings.Split(ref.File, "/")
+			page := fileParts[len(fileParts)-1]
+			if unit, ok := messageMeta["Unit"]; ok && unit != nil {
+				page = unit[0]+" ("+page+")"
+			}
 			source := &model.Source{
 				Filepath: "Pathfinder 2e/"+ref.File,
-				Page:     "",
-				Volume:   "",
+				Page:     page,
+				Volume:   volume,
 				Level:    level,
 				Game:     "pathfinder2",
 			}

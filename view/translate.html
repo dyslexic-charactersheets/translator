@@ -41,7 +41,7 @@
 			<option value='' {{ if eq .CurrentFile "" }}selected{{ end }}>All files</option>
 			{{ $currentFile := .CurrentFile }}
 			{{ range $file := .AllSources }}
-			<option value='{{.Filepath}} ' {{ if eq $currentFile .Filepath }}selected{{ end }}>{{.Page}}</option>
+			<option value='{{.Filepath}}' {{ if eq $currentFile .Filepath }}selected{{ end }}>{{.Page}}</option>
 			{{ end }}
 		</select>
 	</div>

@@ -22,7 +22,7 @@ type Configuration struct {
 	PDF         pdfConfig      `toml:"pdf"`
 	Database    databaseConfig `toml:"db"`
 	OldDatabase databaseConfig `toml:"old_db"`
-	Github      githubConfig   `toml:"github"`
+	// Github      githubConfig   `toml:"github"`
 	Dev         devConfig      `toml:"dev"`
 	Mail        mailConfig     `toml:"mail"`
 	Partial		bool           `toml:"partial"`
@@ -45,9 +45,9 @@ type databaseConfig struct {
 	Password string `toml:"password"`
 }
 
-type githubConfig struct {
-	AccessToken string `toml:"access_token"`
-}
+// type githubConfig struct {
+// 	AccessToken string `toml:"access_token"`
+// }
 
 type devConfig struct {
 	DevLoginURL string `toml:"dev_url"`
