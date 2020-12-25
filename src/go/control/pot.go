@@ -67,6 +67,34 @@ func importPot(data []byte, progress *TaskProgress) {
 	globalMeta := readPoMetaLines(poFile.MimeHeader.ExtractedComment)
 	log.Log("POT", "Global meta: %v", globalMeta)
 
+	// find the game
+	gameCode := "pathfinder2"
+	filepathBase := "Pathfinder 2e/"
+	if games, ok := globalMeta["Game"]; ok {
+		for _, game := range games {
+			log.Log("POT", "Found game:", game)
+			switch game {
+			case "Pathfinder 2nd Edition":
+				gameCode = "pathfinder2"
+				filepathBase = "Pathfinder 2e/"
+
+			case "Pathfinder 1st Edition":
+			case "Pathfinder":
+				gameCode = "pathfinder"
+				filepathBase = "Pathfinder/"
+
+			case "Starfinder":
+				gameCode = "starfinder"
+				filepathBase = "Starfinder/"
+
+			case "Dungeone & Dragons 3.5":
+			case "Dungeons &amp; Dragons 3.5":
+				gameCode = "3.5"
+				filepathBase = "3.5/"
+			}
+		}
+	}
+
 	// messages
 	for i, message := range poFile.Messages {
 		progress.Progress = 2 + i
@@ -131,11 +159,11 @@ func importPot(data []byte, progress *TaskProgress) {
 				page = unit[0]+" ("+page+")"
 			}
 			source := &model.Source{
-				Filepath: "Pathfinder 2e/"+ref.File,
+				Filepath: filepathBase+ref.File,
 				Page:     page,
 				Volume:   volume,
 				Level:    level,
-				Game:     "pathfinder2",
+				Game:     gameCode,
 			}
 			source.Save()
 			
