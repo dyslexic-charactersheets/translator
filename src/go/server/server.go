@@ -40,6 +40,8 @@ func RunTranslator(host string, debug int) {
 	handler.HandleFunc("/users/del", control.UsersDelHandler)
 	handler.HandleFunc("/users/masq", control.UsersMasqueradeHandler)
 	handler.HandleFunc("/users/reinvite", control.UsersReinviteHandler)
+	handler.HandleFunc("/users/show-invite", control.UsersShowInviteHandler)
+	handler.HandleFunc("/users/renew-invite", control.UsersRenewInviteHandler)
 	handler.HandleFunc("/account", control.AccountHandler)
 	handler.HandleFunc("/account/password", control.SetPasswordHandler)
 	handler.HandleFunc("/account/reclaim", control.AccountReclaimHandler)
@@ -62,7 +64,7 @@ func RunTranslator(host string, debug int) {
 	handler.HandleFunc("/", defaultHandler)
 
 	authHandler := AuthHandler{handler}
-	sessionHandler := seshcookie.NewSessionHandler(&authHandler, SESSIONKEY, nil)
+	sessionHandler := seshcookie.NewHandler(&authHandler, SESSIONKEY, nil)
 
 	listenPort := ":"+strconv.Itoa(config.Config.Server.Port)
 	log.Log("server", "Listening on port:", listenPort)
@@ -98,7 +100,7 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if model.Debug >= 1 {
 		log.Log("server", " -- %d database queries so far", model.QueryCount)
 	}
-	session := seshcookie.Session.Get(r)
+	session := seshcookie.GetSession(r.Context())
 
 	log.Space()
 	log.Log("server", "Processing", r.Method, r.URL.Path)
@@ -212,7 +214,8 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 			log.Log("server", "Account reclaim: Comparing secret", secret)
 			log.Log("server", "Account reclaim: Against hash", user.Secret)
-			if err := bcrypt.CompareHashAndPassword([]byte(user.Secret), []byte(secret)); err == nil {
+
+			if user.VerifySecret(secret) {
 				password := r.Form.Get("password")
 				password2 := r.Form.Get("password2")
 				if password != "" && password == password2 {
@@ -232,7 +235,6 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			} else {
-				log.Error("server", "Account reclaim: Incorrect:", err)
 				http.Redirect(w, r, "/account/reclaim/incorrect", http.StatusFound)
 				return
 			}
@@ -250,7 +252,7 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 			log.Log("server", "Account reclaim: Comparing secret", secret)
 			log.Log("server", "Account reclaim: Against hash", user.Secret)
-			if err := bcrypt.CompareHashAndPassword([]byte(user.Secret), []byte(secret)); err == nil {
+			if user.VerifySecret(secret) {
 				log.Log("server", "Account reclaim: Showing password form")
 				data := ReclaimFormData{
 					Email:  email,
@@ -260,7 +262,6 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				t.Execute(w, data)
 				return
 			} else {
-				log.Error("server", "Account reclaim: Incorrect:", err)
 				http.Redirect(w, r, "/account/reclaim/incorrect", http.StatusFound)
 				return
 			}

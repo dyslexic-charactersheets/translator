@@ -57,6 +57,57 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func UsersShowInviteHandler(w http.ResponseWriter, r *http.Request) {
+	currentUser := GetCurrentUser(r)
+	if !currentUser.IsAdmin {
+		http.Redirect(w, r, "/users", 303)
+		return
+	}
+
+	email := r.FormValue("user")
+	user := model.GetUserByEmail(email)
+	if user == nil {
+		fmt.Println("User not found: "+email)
+		return
+	}
+	
+	protocol := "https"
+	hostname := config.Config.Server.Hostname
+	if hostname == "localhost" {
+		protocol = "http"
+		hostname = fmt.Sprintf("localhost:%d", config.Config.Server.Port)
+	}
+	secret := user.Secret
+
+	renderTemplate("users_invite", w, r, func(data *TemplateData) {
+		data.User = user
+		
+		if secret == "" {
+			data.InviteURL = ""
+		} else {
+			data.InviteURL = fmt.Sprintf("%s://%s/account/reclaim?email=%s&secret=%s", protocol, hostname, email, secret);
+		}
+	})
+}
+
+func UsersRenewInviteHandler(w http.ResponseWriter, r *http.Request) {
+	currentUser := GetCurrentUser(r)
+	if !currentUser.IsAdmin {
+		http.Redirect(w, r, "/users", 303)
+		return
+	}
+
+	email := r.FormValue("user")
+	user := model.GetUserByEmail(email)
+	if user == nil {
+		fmt.Println("User not found: "+email)
+		return
+	}
+
+	user.GenerateSecret()
+	http.Redirect(w, r, "/users/show-invite?user="+email, 303)
+}
+
 func UsersReinviteHandler(w http.ResponseWriter, r *http.Request) {
 	currentUser := GetCurrentUser(r)
 	if !currentUser.IsAdmin {
@@ -73,7 +124,7 @@ func UsersReinviteHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Reinviting")
 	sendInvitationEmail(user)
 
-	http.Redirect(w, r, "/users", 303)
+	http.Redirect(w, r, "/users/show-invite?user="+email, 303)
 }
 
 func sendInvitationEmail(user *model.User) {

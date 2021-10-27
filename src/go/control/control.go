@@ -49,6 +49,7 @@ type TemplateData struct {
 	ProgressPercent    int
 	ProgressID         int
 
+	InviteURL           string
 	DevLoginURL         string
 }
 
@@ -117,7 +118,7 @@ func Paginate(r *http.Request, size, datasize int) *Pagination {
 }
 
 func SetCurrentUser(user *model.User, r *http.Request) {
-	session := seshcookie.Session.Get(r)
+	session := seshcookie.GetSession(r.Context())
 	if session == nil {
 		return
 	}
@@ -129,7 +130,7 @@ func SetCurrentUser(user *model.User, r *http.Request) {
 }
 
 func GetCurrentUser(r *http.Request) *model.User {
-	session := seshcookie.Session.Get(r)
+	session := seshcookie.GetSession(r.Context())
 	if session == nil {
 		fmt.Println("Get current user: no session")
 		return nil
@@ -535,7 +536,7 @@ func PingUser(email string) {
 }
 
 func PingCurrentUser(r *http.Request) {
-	session := seshcookie.Session.Get(r)
+	session := seshcookie.GetSession(r.Context())
 	if session == nil {
 		return
 	}

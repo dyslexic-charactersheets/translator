@@ -4,7 +4,7 @@
 
 {{ $isAdmin := .IsAdmin }}
 
-<div class='container'>
+<div class='container-fluid'>
 <h1><span class="glyphicon glyphicon-user"></span>&nbsp; Users</h1>
 
 <table class='table table-striped table-hover' id='users-table'>
@@ -57,9 +57,10 @@
 			</td>
 			{{ if $isAdmin }}<td>
 				{{ if not $user.IsAdmin }}
-				<a class='btn btn-warning' href='/users/reinvite?user={{ $user.Email }}'>Reinvite</a>
-				<a class='btn btn-info' href='/users/masq?user={{ $user.Email }}'>Masquerade</a> &nbsp; 
-				<a class='btn btn-danger' href='/users/del?user={{ $user.Email }}'>Delete</a>
+				<a class='btn btn-warning' href='/users/reinvite?user={{ $user.Email }}'><span class="glyphicon glyphicon-envelope"></span> Reinvite</a>
+				<a class='btn btn-info' href='/users/show-invite?user={{ $user.Email }}'>Show Invitation</a>
+				<a class='btn btn-info' href='/users/masq?user={{ $user.Email }}'>Masquerade</a>
+				<a class='btn btn-danger' href='/users/del?user={{ $user.Email }}'><span class="glyphicon glyphicon-trash"></span> Delete</a>
 				{{ end }}
 			</td>{{ end }}
 		</tr>

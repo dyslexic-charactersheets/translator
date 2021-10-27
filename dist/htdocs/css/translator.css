@@ -1,5 +1,10 @@
 /* General */
 
+body {
+  background: #e0e0e0;
+  background: linear-gradient(90deg, #e0e0e0, #f0f0f0 25%, #f0f0f0 75%, #e0e0e0);
+}
+
 #body {
 	padding-top: 60px;
 }
@@ -73,6 +78,10 @@ body.users #nav-users a
   margin-top: -25px;
   float: left;
   width: 1px;
+}
+
+.panel {
+  box-shadow: 0 3px 5px rgb(0 0 0 / 20%);
 }
 
 form.panel-view-form {

@@ -4,6 +4,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"../log"
 	"math/rand"
+	"bytes"
+	"fmt"
 	// "sort"
 	// "strconv"
 	"strings"
@@ -140,6 +142,21 @@ func (this entriesByIndex) Swap(i, j int) {
 }
 
 //
+
+func (user *User) VerifySecret(secret string) bool {
+	fmt.Println("Verify secret")
+	cmp := bytes.Compare([]byte(user.Secret), []byte(secret))
+	fmt.Println("Verify secret: Comparison:", cmp)
+	if cmp == 0 {
+		return true
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Secret), []byte(secret)); err == nil {
+		return true
+	} else {
+		log.Error("server", "Verify secret: Incorrect:", err)
+	}
+	return false
+}
 
 func (user *User) GenerateSecret() string {
 	base := make([]byte, 256)
