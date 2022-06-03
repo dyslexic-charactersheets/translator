@@ -50,6 +50,7 @@ type TemplateData struct {
 	ProgressID         int
 
 	InviteURL           string
+	LiveLoginURL        string
 	DevLoginURL         string
 }
 

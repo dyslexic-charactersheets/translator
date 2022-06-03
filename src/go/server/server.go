@@ -45,6 +45,7 @@ func RunTranslator(host string, debug int) {
 	handler.HandleFunc("/account", control.AccountHandler)
 	handler.HandleFunc("/account/password", control.SetPasswordHandler)
 	handler.HandleFunc("/account/reclaim", control.AccountReclaimHandler)
+	handler.HandleFunc("/authorise", control.AuthRedirectHandler)
 
 	handler.HandleFunc("/api/setlead", control.APISetLeadHandler)
 	handler.HandleFunc("/api/clearlead", control.APIClearLeadHandler)

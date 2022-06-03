@@ -23,6 +23,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate("home", w, r, func(data *TemplateData) {
 		data.LanguageCompletion = model.GetLanguageCompletion()
 		data.DevLoginURL = GetDevLoginURL(r)
+		data.LiveLoginURL = GetLiveLoginURL(r)
 	})
 }
 
@@ -277,6 +278,41 @@ type Issue struct {
 // 	Name  string `json:"name"`
 // 	Color string `json:"color"`
 // }
+
+
+func AuthRedirectHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Auth redirect")
+
+	liveLoginURL := GetLiveLoginURL(r)
+	http.Redirect(w, r, liveLoginURL, 303)
+}
+
+
+func GetLiveLoginURL(r *http.Request) string {
+	base := config.Config.Live.LiveLoginURL
+	sharedSecret := config.Config.Live.SharedSecret
+
+	fmt.Println("Live login: shared secret:", sharedSecret)
+
+	currentUser := GetCurrentUser(r)
+	h := sha256.New()
+	h.Write([]byte(currentUser.Email))
+	hash := h.Sum(nil)
+	token := hex.EncodeToString(hash)
+
+	fmt.Println("Live login: token:", token)
+
+	h = sha256.New()
+	h.Write([]byte(token))
+	h.Write([]byte(sharedSecret))
+	hash = h.Sum(nil)
+	signature := hex.EncodeToString(hash)
+	
+	fmt.Println("Live login: signature:", signature)
+
+	return base+"?login="+token+":"+signature
+}
+
 
 func GetDevLoginURL(r *http.Request) string {
 	base := config.Config.Dev.DevLoginURL

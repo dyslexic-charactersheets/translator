@@ -24,6 +24,7 @@ type Configuration struct {
 	OldDatabase databaseConfig `toml:"old_db"`
 	// Github      githubConfig   `toml:"github"`
 	Dev         devConfig      `toml:"dev"`
+	Live        liveConfig     `toml:"live"`
 	Mail        mailConfig     `toml:"mail"`
 	Partial		bool           `toml:"partial"`
 }
@@ -51,6 +52,11 @@ type databaseConfig struct {
 
 type devConfig struct {
 	DevLoginURL string `toml:"dev_url"`
+	SharedSecret string `toml:"shared_secret"`
+}
+
+type liveConfig struct {
+	LiveLoginURL string `toml:"live_url"`
 	SharedSecret string `toml:"shared_secret"`
 }
 
