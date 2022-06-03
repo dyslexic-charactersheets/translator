@@ -21,6 +21,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Dashboard")
 
 	renderTemplate("home", w, r, func(data *TemplateData) {
+		fmt.Println("Dashboard params")
 		data.LanguageCompletion = model.GetLanguageCompletion()
 		data.DevLoginURL = GetDevLoginURL(r)
 		data.LiveLoginURL = GetLiveLoginURL(r)
