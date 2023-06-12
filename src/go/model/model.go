@@ -14,11 +14,11 @@ import (
 
 // Languages
 var Languages []string = []string{
-	"gb", "it", "fr", "de", "es", "pl", "pt", "br", "ru", "nl", "no", "zh", "tw", "jp", "cy", "kl", "us",
+	"gb", "it", "fr", "de", "es", "pl", "pt", "br", "ua", "ru", "nl", "no", "zh", "tw", "jp", "cy", "kl", "us",
 }
 
 var DisplayLanguages []string = []string{
-	"it", "de", "es", "fr", "pl", "pt", "br", "ru", "nl", "zh", "tw", "jp",
+	"it", "de", "es", "fr", "pl", "pt", "br", "ua", "ru", "nl", "zh", "tw", "jp",
 }
 
 var LanguageNames map[string]string = map[string]string{
@@ -30,6 +30,7 @@ var LanguageNames map[string]string = map[string]string{
 	"pl": "Polski",
 	"pt": "Português",
 	"br": "Português do Brasil",
+	"ua": "украї́нська",
 	"ru": "Ру́сский",
 	"nl": "Nederlands",
 	"no": "Norsk",
@@ -50,6 +51,7 @@ var LanguageNamesEnglish map[string]string = map[string]string{
 	"pl": "Polish",
 	"pt": "Portuguese",
 	"br": "Brazilian Portuguese",
+	"ua": "Ukrainian",
 	"ru": "Russian",
 	"nl": "Dutch",
 	"no": "Norwegian",
@@ -69,6 +71,7 @@ var LanguagePaths map[string]string = map[string]string{
 	"pl": "polish",
 	"pt": "portuguese",
 	"br": "brazilian-portuguese",
+	"ua": "ukrainian",
 	"ru": "russian",
 	"nl": "dutch",
 	"no": "norwegian",
