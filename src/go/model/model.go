@@ -2,7 +2,7 @@ package model
 
 import (
 	"golang.org/x/crypto/bcrypt"
-	"../log"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"math/rand"
 	"bytes"
 	"fmt"

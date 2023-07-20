@@ -1,12 +1,12 @@
 package server
 
 import (
-	"../config"
-	"../model"
+	"github.com/dyslexic-charactersheets/translator/src/go/config"
+	"github.com/dyslexic-charactersheets/translator/src/go/model"
 	"fmt"
-	"../log"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	// "io/ioutil"
-	"../control"
+	"github.com/dyslexic-charactersheets/translator/src/go/control"
 	"golang.org/x/crypto/bcrypt"
 	"github.com/bpowers/seshcookie"
 	"html/template"

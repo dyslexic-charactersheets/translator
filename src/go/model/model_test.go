@@ -2,7 +2,7 @@ package model
 
 import (
 	"testing"
-	"../log"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 )
 
 func TestEntryID(t *testing.T) {

@@ -1,7 +1,7 @@
 package control
 
 import (
-	"../model"
+	"github.com/dyslexic-charactersheets/translator/src/go/model"
 	"fmt"
 	// "code.google.com/p/go.crypto/bcrypt"
 	// "crypto/md5"

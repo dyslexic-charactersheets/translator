@@ -2,7 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"../log"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 )
 
 type signal struct{}

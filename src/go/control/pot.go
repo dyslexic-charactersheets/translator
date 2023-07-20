@@ -1,10 +1,10 @@
 package control
 
 import (
-	"../model"
+	"github.com/dyslexic-charactersheets/translator/src/go/model"
 	"io/ioutil"
 	"fmt"
-	"../log"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"net/http"
 	"strconv"
 	"strings"

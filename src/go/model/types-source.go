@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	// "encoding/hex"
 	// "encoding/binary"
-	"../log"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	// "github.com/ziutek/mymysql/mysql"
 	// "strings"
 )

@@ -1,8 +1,8 @@
 package control
 
 import (
-	"../config"
-	"../model"
+	"github.com/dyslexic-charactersheets/translator/src/go/config"
+	"github.com/dyslexic-charactersheets/translator/src/go/model"
 	"golang.org/x/crypto/bcrypt"
 	"crypto/sha256"
 	"fmt"

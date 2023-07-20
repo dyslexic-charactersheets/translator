@@ -1,9 +1,9 @@
 package model
 
 import (
-	"../config"
+	"github.com/dyslexic-charactersheets/translator/src/go/config"
 	"database/sql"
-	"../log"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"strings"
 	"runtime/debug"
 )

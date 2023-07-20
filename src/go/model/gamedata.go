@@ -3,9 +3,9 @@ package model
 import (
 	"io/ioutil"
 	"encoding/json"
-	"../log"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"path/filepath"
-	"../config"
+	"github.com/dyslexic-charactersheets/translator/src/go/config"
 )
 
 type GameData struct {

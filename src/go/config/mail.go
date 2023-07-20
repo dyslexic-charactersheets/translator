@@ -1,6 +1,6 @@
 package config
 
-import(
+import (
 	"net/smtp"
 	"crypto/tls"
 	"fmt"
