@@ -162,7 +162,7 @@ func (user *User) VerifySecret(secret string) bool {
 }
 
 func (user *User) GenerateSecret() string {
-	base := make([]byte, 256)
+	base := make([]byte, 72)
 	for i, _ := range base {
 		base[i] = byte(rand.Int())
 	}

@@ -7,13 +7,13 @@ setup:
 	go install
 
 build:
-	go build src/go/translator.go
+	go build translator.go
 
 run:
 	./run-translator.sh
 
 test:
-	go run src/go/translator.go
+	go run translator.go
 
 log:
 	tailf /var/log/translator
@@ -21,6 +21,3 @@ log:
 migrate:
 	go run src/go/migrate.go
 
-build-all:
-	# TODO cross-compile for all targets
-	go build src/go/translator.go
