@@ -35,6 +35,64 @@
 		</select>
 	</div>
 
+	{{ if eq .CurrentGame "pathfinder2" }}
+	<div class="form-group">
+		<label for='options-source'>Sources books</label>
+		<select id='options-source' name='source' class='form-control'>
+			{{ if or (eq .CurrentLevel "0") (eq .CurrentLevel "1") }}
+				<option value='core' >Core</option>
+			{{ end }}
+			{{ if or (eq .CurrentLevel "0") (eq .CurrentLevel "2") }}
+			<option value='apg' >Advanced Player's Guide</option>
+			<option value='secrets-of-magic' >Secrets of Magic</option>
+			{{ end }}
+			{{ if or (eq .CurrentLevel "0") (eq .CurrentLevel "3") }}
+			<option value='pathfinder-society-guide' >pathfinder-society-guide</option>
+			<option value='world-guide' >world-guide</option>
+			{{ end }}
+			{{ if or (eq .CurrentLevel "0") (eq .CurrentLevel "4") }}
+			<option value='guns-and-gears' >Guns and Gears</option>
+			<option value='dark-archive' >Dark Archive</option>
+			<option value='book-of-the-dead' >Book of the Dead</option>
+			<optgroup label=""></optgroup>
+			<option value='absalom' >absalom</option>
+			<option value='ancestry-guide' >ancestry-guide</option>
+			<option value='character-guide' >character-guide</option>
+			<option value='firebrands' >firebrands</option>
+			<option value='gods-and-magic' >gods-and-magic</option>
+			<option value='grand-bazaar' >grand-bazaar</option>
+			<option value='highhelm' >highhelm</option>
+			<option value='knights-of-lastwall' >knights-of-lastwall</option>
+			<option value='mwangi-expanse' >mwangi-expanse</option>
+			<option value='travel-guide' >travel-guide</option>
+			<optgroup label=""></optgroup>
+			<option value='abomination-vaults' > abomination-vaults</option>
+			<option value='age-of-ashes' > age-of-ashes</option>
+			<option value='agents-of-edgewatch' > agents-of-edgewatch</option>
+			<option value='blood-lords' > blood-lords</option>
+			<option value='crown-of-the-kobold-king' > crown-of-the-kobold-king</option>
+			<option value='extinction-curse' > extinction-curse</option>
+			<option value='fall-of-plaguestone' > fall-of-plaguestone</option>
+			<option value='fists-of-the-ruby-phoenix' > fists-of-the-ruby-phoenix</option>
+			<option value='gatewalkers' > gatewalkers</option>
+			<option value='kingmaker' > kingmaker</option>
+			<option value='little-trouble-in-big-absalom' > little-trouble-in-big-absalom</option>
+			<option value='outlaws-of-alkenstar' > outlaws-of-alkenstar</option>
+			<option value='pfs' > pfs</option>
+			<option value='quest-for-the-frozen-flame' > quest-for-the-frozen-flame</option>
+			<option value='stolen-fate' > stolen-fate</option>
+			<option value='strength-of-thousands' > strength-of-thousands</option>
+			<optgroup label=""></optgroup>
+			<option value='battlezoo' >Battlezoo</option>
+			<option value='ponyfinder' >Ponyfinder</option>
+			<option value='rogue-genius' >Rogue Genius</option>
+			{{ end }}
+			<!-- <option value='remaster' >Remaster</option>
+			<option value='beginner-box' >Beginner Box</option> -->
+		</select>
+	</div>
+	{{ end }}
+
 	<div class="form-group">
 		<label for='options-file'>File</label>
 		<select id='options-file' name='file' class='form-control'>
