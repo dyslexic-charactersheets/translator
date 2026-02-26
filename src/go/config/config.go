@@ -1,7 +1,8 @@
 package config
 
 import (
-	"fmt"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
+	// "fmt"
 	toml "github.com/BurntSushi/toml"
 	"io/ioutil"
 	// "os"
@@ -98,13 +99,13 @@ func LoadConfig(initial bool) {
 
 	configData, err := ioutil.ReadFile("dist/conf/config.toml")
 	if err != nil {
-		fmt.Println("Error opening config.toml:", err)
+		log.Error("config", "Error opening config.toml:", err)
 		Config.Fail = true
 		return
 	}
 	if _, err := toml.Decode(string(configData), &config); err != nil {
 		// handle error
-		fmt.Println("Error decoding config.toml:", err)
+		log.Error("config", "Error decoding config.toml:", err)
 		Config.Fail = true
 		return
 	}
@@ -119,7 +120,7 @@ func LoadConfig(initial bool) {
 }
 
 func DebugConfig() {
-	fmt.Printf("Config: %#v\n", Config)
+	log.Log("config", "Config", Config)
 }
 
 func (server *serverConfig) Host() string {
@@ -132,7 +133,7 @@ func (db *databaseConfig) Open() (*sql.DB, error) {
 		conn = "tcp:" + db.Hostname + "*" + conn
 	}
 	if Config.Debug > 0 {
-		fmt.Println("Connecting to", conn)
+		log.Log("config", "Connecting to", conn)
 	}
 	sqldb, err := sql.Open("mymysql", conn)
 	return sqldb, err

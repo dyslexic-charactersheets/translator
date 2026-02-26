@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"net/smtp"
 	"crypto/tls"
 	"fmt"
@@ -9,7 +10,7 @@ import (
 
 func SendMail(rcpt, message string) bool {
 	mailConfig := Config.Mail
-	fmt.Println("Mail config:", mailConfig)
+	log.Log("mail", "Mail config:", mailConfig)
 
 	var auth smtp.Auth = nil
 	if mailConfig.UseAuth {
@@ -25,7 +26,7 @@ func SendMail(rcpt, message string) bool {
 	if err := smtp.SendMail(mailConfig.Hostname, auth, mailConfig.From, rcpts, messageBytes); err == nil {
 		return true
 	} else {
-		fmt.Println("Error sending mail:", err)
+		log.Error("mail", "Error sending mail:", err)
 	}
 
 
@@ -33,7 +34,7 @@ func SendMail(rcpt, message string) bool {
 	// connect
 	client, err := smtp.Dial(mailConfig.Hostname)
 	if err != nil {
-		fmt.Println("Error sending mail:", err)
+		log.Error("mail", "Error sending mail:", err)
 		return false
 	}
 	defer client.Quit()
@@ -46,7 +47,7 @@ func SendMail(rcpt, message string) bool {
 	if mailConfig.UseAuth {
 		err = client.Auth(auth)
 		if err != nil {
-			fmt.Println("Error sending mail:", err)
+			log.Error("mail", "Error sending mail:", err)
 			return false
 		}
 	}
@@ -58,24 +59,24 @@ func SendMail(rcpt, message string) bool {
 	// write the body
 	writer, err := client.Data()
 	if err != nil {
-		fmt.Println("Error sending mail:", err)
+		log.Error("mail", "Error sending mail:", err)
 		return false
 	}
 	_, err = fmt.Fprintf(writer, message)
 	if err != nil {
-		fmt.Println("Error sending mail:", err)
+		log.Error("mail", "Error sending mail:", err)
 		return false
 	}
 	err = writer.Close()
 	if err != nil {
-		fmt.Println("Error sending mail:", err)
+		log.Error("mail", "Error sending mail:", err)
 		return false
 	}
 
 	// Send the QUIT command and close the connection.
 	err = client.Quit()
 	if err != nil {
-		fmt.Println("Error sending mail:", err)
+		log.Error("mail", "Error sending mail:", err)
 		return false
 	}
 

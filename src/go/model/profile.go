@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
+	// "fmt"
+)
 
 //  Profile translations
 
@@ -48,35 +51,35 @@ func ProfileTranslations(user *User) [4]*TranslationProfile {
 			continue
 		}
 
-		fmt.Println(LanguageNames[lang], " at level ", LevelNames[level])
+		log.Log("profile", LanguageNames[lang], " at level ", LevelNames[level])
 
 		total := query("select count(*) from (select Entries.EntryID from Entries "+
 			"inner join EntrySources on Entries.EntryID = EntrySources.EntryID "+
 			"inner join Sources on EntrySources.SourceID = Sources.SourceID and Sources.Level = ? "+
 			"group by Entries.EntryID) as sq",
 			level).count()
-		fmt.Println(" -- total = ", total)
+		log.Log("profile", " -- total = ", total)
 
 		completed := query("select count(*) from (select Translations.EntryID from Translations "+
 			"inner join EntrySources on Translations.EntryID = EntrySources.EntryID "+
 			"inner join Sources on EntrySources.SourceID = Sources.SourceID and Sources.Level = ? "+
 			"where Language = ? group by Translations.EntryID) as sq",
 			level, lang).count()
-		fmt.Println(" -- completed = ", completed)
+		log.Log("profile", " -- completed = ", completed)
 
 		byme := query("select count(*) from (select Translations.EntryID from Translations "+
 			"inner join EntrySources on Translations.EntryID = EntrySources.EntryID "+
 			"inner join Sources on Sources.SourceID = EntrySources.SourceID and Sources.Level = ? "+
 			"where Language = ? and Translator = ? group by Translations.EntryID) as sq",
 			level, lang, user.Email).count()
-		fmt.Println(" -- by me = ", byme)
+		log.Log("profile", " -- by me = ", byme)
 
 		byothers := query("select count(*) from (select Translations.EntryID from Translations "+
 			"inner join EntrySources on Translations.EntryID = EntrySources.EntryID "+
 			"inner join Sources on Sources.SourceID = EntrySources.SourceID and Sources.Level = ? "+
 			"where Language = ? and Translator != ? group by Translations.EntryID) as sq",
 			level, lang, user.Email).count()
-		fmt.Println(" -- by others =", byothers)
+		log.Log("profile", " -- by others =", byothers)
 
 		byboth := query("select count(*) from (select A.EntryID from Translations A "+
 			"inner join Translations B on A.EntryID = B.EntryID and A.Language = B.Language and A.Translator != B.Translator "+
@@ -85,7 +88,7 @@ func ProfileTranslations(user *User) [4]*TranslationProfile {
 			"where A.Language = ? and A.Translator = ? "+
 			"group by A.EntryID"+
 			") as qs", level, lang, user.Email).count()
-		fmt.Println(" -- by both =", byboth)
+		log.Log("profile", " -- by both =", byboth)
 
 		// conflict := query("select count(*) from (select A.EntryID from Translations A "+
 		// 	"inner join Translations B on A.EntryID = B.EntryID and A.Language = B.Language and A.Translator != B.Translator and A.Translation != B.Translation "+
@@ -108,7 +111,7 @@ func ProfileTranslations(user *User) [4]*TranslationProfile {
 			"group by A.EntryID"+
 			") as qs", level, lang, user.Email).count()
 
-		fmt.Println(" -- conflicting =", conflict, " by me =", myconflict)
+		log.Log("profile", " -- conflicting =", conflict, " by me =", myconflict)
 
 		total64 := float64(total) + 0.0001
 		completed64 := float64(completed) + 0.0001
@@ -141,7 +144,7 @@ func ProfileTranslations(user *User) [4]*TranslationProfile {
 			AnyConflictPercent:             roundPercent(float64(conflict) / completed64),
 			ByNobodyPercent:                roundPercent(float64(total-(byme+byothers-byboth)) / completed64),
 		}
-		fmt.Println(" -- profile =", profile)
+		log.Log("profile", " -- profile =", profile)
 		profiles[level-1] = &profile
 	}
 	return profiles

@@ -2,6 +2,7 @@ package control
 
 import (
 	"github.com/dyslexic-charactersheets/translator/src/go/model"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"fmt"
 	// "code.google.com/p/go.crypto/bcrypt"
 	// "crypto/md5"
@@ -18,7 +19,7 @@ func APIEntriesHandler(w http.ResponseWriter, r *http.Request) {
 func APITranslateHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetCurrentUser(r)
 	if user == nil {
-		fmt.Println("Unknown user")
+		log.Warn("api", "Unknown user")
 		return
 	}
 
@@ -27,21 +28,21 @@ func APITranslateHandler(w http.ResponseWriter, r *http.Request) {
 		PartOf:   r.FormValue("partOf"),
 	}
 	if entry.Original == "" {
-		fmt.Println("Unknown string")
+		log.Warn("api", "Unknown string")
 		return
 	}
 	language := r.FormValue("language")
 	translation := r.FormValue("translation")
 
 	if language == "" {
-		fmt.Println("Unknown language:", language)
+		log.Warn("api", "Unknown language:", language)
 		return
 	}
 	// if translation == "" {
-	// 	fmt.Println("Blank translation:", entry.Original)
+	// 	log.Warn("Blank translation:", entry.Original)
 	// 	return
 	// }
-	fmt.Println("Adding", language, "translation for:", entry.Original)
+	log.Log("api", "Adding", language, "translation for:", entry.Original)
 
 	t := &model.Translation{entry, language, translation, user.Email, false, false}
 	t.Save(t.HasChanged())
@@ -58,7 +59,7 @@ const maxTranslations = 10
 func APILookupHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetCurrentUser(r)
 	if user == nil {
-		fmt.Println("Unknown user")
+		log.Warn("api", "Unknown user")
 		return
 	}
 
@@ -84,7 +85,7 @@ func APILookupHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			preferredTranslation.Entry = result
-			fmt.Println("Found result:", preferredTranslation)
+			log.Log("api", "Found result:", preferredTranslation)
 			translationResults = append(translationResults, preferredTranslation)
 		}
 		if len(translationResults) >= maxTranslations {
@@ -95,7 +96,7 @@ func APILookupHandler(w http.ResponseWriter, r *http.Request) {
 	if len(translationResults) > 0 {
 		fmt.Fprint(w, "<table>");
 		for _, tr := range translationResults {
-			fmt.Println("Printing result:", tr)
+			log.Log("api", "Printing result:", tr)
 			translated := tr.FullText
 			original := tr.Entry.FullText
 			fmt.Fprintf(w, "<tr><th>%s</th><td>%s</td></tr>", original, translated);
@@ -106,11 +107,11 @@ func APILookupHandler(w http.ResponseWriter, r *http.Request) {
 
 func APIVoteHandler(w http.ResponseWriter, r *http.Request) {
 	if model.Debug >= 1 {
-		fmt.Println(" * Vote handler")
+		log.Log("api", "Vote handler")
 	}
 	user := GetCurrentUser(r)
 	if user == nil {
-		fmt.Println("Unknown user")
+		log.Log("api", "Vote handler: Unknown user")
 		return
 	}
 
@@ -119,7 +120,7 @@ func APIVoteHandler(w http.ResponseWriter, r *http.Request) {
 		PartOf:   r.FormValue("partOf"),
 	}
 	if entry.Original == "" {
-		fmt.Println("Unknown string")
+		log.Warn("api", "Vote handler: Unknown string")
 		return
 	}
 	language := r.FormValue("language")
@@ -134,13 +135,13 @@ func APIVoteHandler(w http.ResponseWriter, r *http.Request) {
 	down := r.FormValue("down") == "true"
 	if up && down {
 		if model.Debug >= 1 {
-			fmt.Println("Cannot vote both down and up")
+			log.Warn("api", "Vote handler: Cannot vote both down and up")
 		}
 		return
 	}
 
 	if model.Debug >= 1 {
-		fmt.Println(" * Saving vote:", entry.Original, "=", translation, up, down)
+		log.Log("api", "Vote handler: Saving vote:", entry.Original, "=", translation, up, down)
 	}
 
 	model.ClearVotes(t)
@@ -155,7 +156,7 @@ func APIVoteHandler(w http.ResponseWriter, r *http.Request) {
 
 	// recalculate conflicts
 	if model.Debug >= 1 {
-		fmt.Println(" * Checking for conflicts:")
+		log.Log("api", "Checking for conflicts:")
 	}
 	stack := t.Entry.GetStackedEntry()
 	stack.MarkConflicts(language)
@@ -166,7 +167,7 @@ func APIVoteHandler(w http.ResponseWriter, r *http.Request) {
 func APISetLeadHandler(w http.ResponseWriter, r *http.Request) {
 	me := GetCurrentUser(r)
 	if !me.IsAdmin {
-		fmt.Println("Hah!")
+		log.Error("api", "Set lead: Not admin!")
 		return
 	}
 
@@ -174,17 +175,17 @@ func APISetLeadHandler(w http.ResponseWriter, r *http.Request) {
 	user := model.GetUserByEmail(email)
 
 	if user == nil {
-		fmt.Print(w, "Unknown user")
+		log.Error("api", "Set lead: Unknown user")
 		return
 	}
-	fmt.Println("Setting", user.Name, "as language lead for", model.LanguageNames[user.Language])
+	log.Log("api", "Set lead: Setting", user.Name, "as language lead for", model.LanguageNames[user.Language])
 	user.SetLanguageLead()
 }
 
 func APIClearLeadHandler(w http.ResponseWriter, r *http.Request) {
 	me := GetCurrentUser(r)
 	if !me.IsAdmin {
-		fmt.Println("Hah!")
+		log.Error("api", "Clear lead: Not admin!")
 		return
 	}
 
@@ -192,9 +193,9 @@ func APIClearLeadHandler(w http.ResponseWriter, r *http.Request) {
 	user := model.GetUserByEmail(email)
 
 	if user == nil {
-		fmt.Print(w, "Unknown user")
+		log.Error("api", "Clear lead: Unknown user")
 		return
 	}
-	fmt.Println("Removing", user.Name, "as language lead for", model.LanguageNames[user.Language])
+	log.Log("api", "Clear lead: Removing", user.Name, "as language lead for", model.LanguageNames[user.Language])
 	user.ClearLanguageLead()
 }

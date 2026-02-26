@@ -1,8 +1,9 @@
 package model
 
 import (
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	// "code.google.com/p/go.crypto/bcrypt"
-	"fmt"
+	// "fmt"
 	// "math/rand"
 	"sort"
 	"strconv"
@@ -34,7 +35,7 @@ func (se *StackedEntry) ID() uint64 {
 }
 
 func stackEntries(entries []*Entry) []*StackedEntry {
-	fmt.Println("Stacking", len(entries), "entries")
+	log.Log("stack", "Stacking", len(entries), "entries")
 	stacks := make(map[string][]*Entry, len(entries))
 	unstacked := make([]*Entry, 0, len(entries))
 	for _, entry := range entries {
@@ -50,7 +51,7 @@ func stackEntries(entries []*Entry) []*StackedEntry {
 
 	// put entries in order
 	// if Debug >= 1 {
-	// 	fmt.Println("Sorting entries")
+	// 	log.Log("stack", ("Sorting entries")
 	// }
 	values := make([]*StackedEntry, 0, len(stacks)+len(unstacked))
 	for _, stack := range stacks {
@@ -69,7 +70,7 @@ func stackEntries(entries []*Entry) []*StackedEntry {
 
 	// load sources
 	if Debug >= 1 {
-		fmt.Println("Loading sources")
+		log.Log("stack", "Loading sources")
 	}
 	sources := make(map[uint64]*Source, 500)
 	for _, source := range GetSources() {
@@ -78,7 +79,7 @@ func stackEntries(entries []*Entry) []*StackedEntry {
 
 	// calculate totals
 	if Debug >= 1 {
-		fmt.Println("Calculating totals")
+		log.Log("stack", "Calculating totals")
 	}
 	for _, se := range values {
 		entrySources := make(map[uint64]*EntrySource, len(se.Entries)*10)
@@ -104,7 +105,7 @@ func stackEntries(entries []*Entry) []*StackedEntry {
 
 func sortStacks(values []*StackedEntry, sortBy, search string) []*StackedEntry {
 	if Debug >= 1 {
-		fmt.Println("Sorting stacks by:", sortBy)
+		log.Log("stack", "Sorting stacks by:", sortBy)
 	}
 	switch sortBy {
 	case "", "uses":

@@ -1,7 +1,8 @@
 package model
 
 import (
-	"fmt"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
+	// "fmt"
 	"regexp"
 )
 
@@ -56,7 +57,7 @@ func PickPreferredTranslation(translations []RankTranslation) *StackedTranslatio
 func correctTranslationDice(translation *StackedTranslation) *StackedTranslation {
 	d00rex, _ := regexp.Compile("00$")
 	if d00rex.MatchString(translation.FullText) {
-		fmt.Println("Correcting dice translation:", translation.FullText)
+		log.Log("rank", "Correcting dice translation:", translation.FullText)
 		parts := make([]*Translation, len(translation.Parts))
 		for i, part := range translation.Parts {
 			newPart := *part
@@ -129,7 +130,7 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 	}
 
 	if Debug >= 2 {
-		fmt.Println(" - Voting scores:", scores)
+		log.Log("rank", " - Voting scores:", scores)
 	}
 
 	// get translations from people who haven't upvoted
@@ -163,7 +164,7 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 	}
 	isConflicted := numNearTopRank > 1
 	if isConflicted && Debug >= 1 {
-		fmt.Println("Conflict!", numNearTopRank, "translations for:", entry.FullText)
+		log.Log("rank", "Conflict!", numNearTopRank, "translations for:", entry.FullText)
 	}
 
 	// update their flags
@@ -176,7 +177,7 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 			part.IsPreferred = translation.IsPreferred
 			if save {
 				if Debug >= 2 {
-					fmt.Println(" - Saving translation part:", part)
+					log.Log("rank", " - Saving translation part:", part)
 				}
 				part.Save(false)
 			}
@@ -184,7 +185,7 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 	}
 
 	if Debug >= 2 {
-		fmt.Println(" - Ranking for return")
+		log.Log("rank", " - Ranking for return")
 	}
 
 	// return the marked and ranked translations
@@ -199,11 +200,11 @@ func (entry *StackedEntry) RankTranslations(translations []*StackedTranslation, 
 
 func (se *StackedEntry) MarkConflicts(language string) {
 	if Debug >= 1 {
-		fmt.Println("Marking conflicts in '"+se.FullText+"' ("+language+")")
+		log.Log("rank", "Marking conflicts in '"+se.FullText+"' ("+language+")")
 	}
 	translations := se.GetTranslations(language)
 	if Debug >= 1 {
-		fmt.Println("Ranking", len(translations), "translations")
+		log.Log("rank", "Ranking", len(translations), "translations")
 	}
 	se.RankTranslations(translations, true)
 }
@@ -211,7 +212,7 @@ func (se *StackedEntry) MarkConflicts(language string) {
 
 func MarkAllConflicts() {
 	stackedEntries := GetStackedEntries("", "", "", "", "", false, "", "", nil)
-	fmt.Println("Loaded", len(stackedEntries), "stacked entries")
+	log.Log("rank", "Loaded", len(stackedEntries), "stacked entries")
 
 	for _, se := range stackedEntries {
 		for _, lang := range Languages {

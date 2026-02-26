@@ -7,9 +7,11 @@
 	</div>
 	<div class="panel-footer">
 		<a href='https://github.com/dyslexic-charactersheets/lib-charactersheets'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Library</a>
+		(Pathfinder 2+)
 	</div>
 	<div class="panel-footer">
 		<a href='https://github.com/dyslexic-charactersheets/pages'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Pages</a>
+		(Pathfinder 1 and D&D 3.5)
 	</div>
 	<div class="panel-footer">
 		<a href='https://github.com/dyslexic-charactersheets/iconics'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Iconics</a>
@@ -18,10 +20,12 @@
 		<a href='https://github.com/dyslexic-charactersheets/assets'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Assets</a>
 	</div>
 	<div class="panel-footer">
-		<a href='https://github.com/dyslexic-charactersheets/website'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Website</a>
+		<a href='https://github.com/dyslexic-charactersheets/website-new'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Website</a>
+		(new site)
 	</div>
 	<div class="panel-footer">
 		<a href='https://github.com/dyslexic-charactersheets/translator'><span class='glyphicon glyphicon-folder-open'></span>&nbsp; Translator</a>
+		(this site)
 	</div>
 </div>
 

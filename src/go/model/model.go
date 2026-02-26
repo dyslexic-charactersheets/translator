@@ -5,7 +5,6 @@ import (
 	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"math/rand"
 	"bytes"
-	"fmt"
 	// "sort"
 	// "strconv"
 	"strings"
@@ -18,7 +17,7 @@ var Languages []string = []string{
 }
 
 var DisplayLanguages []string = []string{
-	"it", "de", "es", "fr", "pl", "pt", "br", "ua", "ru", "nl", "zh", "tw", "jp",
+	"it", "de", "es", "fr", "pl", "pt", "br", "ua", "ru", "nl", "no", "zh", "tw", "jp",
 }
 
 var LanguageNames map[string]string = map[string]string{
@@ -147,16 +146,16 @@ func (this entriesByIndex) Swap(i, j int) {
 //
 
 func (user *User) VerifySecret(secret string) bool {
-	fmt.Println("Verify secret")
+	log.Log("model", "Verify secret")
 	cmp := bytes.Compare([]byte(user.Secret), []byte(secret))
-	fmt.Println("Verify secret: Comparison:", cmp)
+	log.Log("model", "Verify secret: Comparison:", cmp)
 	if cmp == 0 {
 		return true
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Secret), []byte(secret)); err == nil {
 		return true
 	} else {
-		log.Error("server", "Verify secret: Incorrect:", err)
+		log.Error("model", "Verify secret: Incorrect:", err)
 	}
 	return false
 }

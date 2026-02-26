@@ -2,6 +2,7 @@ package control
 
 import (
 	"github.com/dyslexic-charactersheets/translator/src/go/model"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	// "code.google.com/p/go.crypto/bcrypt"
 	// "crypto/md5"
 	// "encoding/hex"
@@ -11,7 +12,7 @@ import (
 	"encoding/csv"
 	// "io"
 	"bufio"
-	"fmt"
+	// "fmt"
 	"mime/multipart"
 	"net/http"
 	"path"
@@ -47,7 +48,7 @@ func SourcesHandler(w http.ResponseWriter, r *http.Request) {
 			data.Sources = model.GetSourcesAt(data.CurrentGame, leveln, data.CurrentShow)
 		}
 		data.AllSources = model.GetSourcesAt(data.CurrentGame, leveln, "")
-		fmt.Println("Writing", len(data.Sources), "sources")
+		log.Log("translate", "Writing", len(data.Sources), "sources")
 
 		data.Page = Paginate(r, PageSize, len(data.Sources))
 		data.Sources = data.Sources[data.Page.Offset:data.Page.Slice]
@@ -70,11 +71,11 @@ func EntriesHandler(w http.ResponseWriter, r *http.Request) {
 		data.AllSources = model.GetSourcesAt(data.CurrentGame, leveln, "")
 
 		data.Entries = model.GetStackedEntries(data.CurrentGame, data.CurrentLevel, data.CurrentFile, data.CurrentShow, data.CurrentSearch, false, "uses", "gb", currentUser)
-		if model.Debug >= 2 { fmt.Println("Loaded", len(data.Entries), "entries") }
+		if model.Debug >= 2 { log.Log("translate", "Loaded", len(data.Entries), "entries") }
 		data.Page = Paginate(r, PageSize, len(data.Entries))
-		if model.Debug >= 2 { fmt.Println("Pagination", data.Page) }
+		if model.Debug >= 2 { log.Log("translate", "Pagination", data.Page) }
 		data.Entries = data.Entries[data.Page.Offset:data.Page.Slice]
-		if model.Debug >= 2 { fmt.Println("Chopped down to", len(data.Entries), "entries") }
+		if model.Debug >= 2 { log.Log("translate", "Chopped down to", len(data.Entries), "entries") }
 	})
 }
 
@@ -96,7 +97,7 @@ func TranslationHandler(w http.ResponseWriter, r *http.Request) {
 			data.CurrentSort = "uses"
 		}
 		if data.CurrentSearch != "" {
-			fmt.Println("Searching for:", data.CurrentSearch)
+			log.Log("translate", "Searching for:", data.CurrentSearch)
 		}
 		
 		leveln, err := strconv.Atoi(data.CurrentLevel)
@@ -136,24 +137,24 @@ type TaskProgress struct {
 
 func importMasterData(data []map[string]string, clean bool, progress *TaskProgress) {
 	sleepTime, _ := time.ParseDuration("5ms")
-	fmt.Println("Importing", len(data), "master records")
+	log.Log("translate", "Importing", len(data), "master records")
 	progress.Scale = len(data) + len(data) / 4
 	progress.Progress = 0
 
 	if clean {
 		if model.Debug >= 1 {
-			fmt.Println("Clean import")
+			log.Log("translate", "Clean import")
 		}
 		model.DeleteAllEntrySources()
 	}
 
 	for _, record := range data {
 		if progress.Abort {
-			fmt.Println("Import aborted")
+			log.Warn("translate", "Import aborted")
 			return
 		}
 		if model.Debug >= 2 {
-			fmt.Println("Inserting translation:", record["Original"], ";", record["Part of"])
+			log.Log("translate", "Inserting translation:", record["Original"], ";", record["Part of"])
 		}
 		entry := &model.Entry{
 			Original: record["Original"],
@@ -185,16 +186,16 @@ func importMasterData(data []map[string]string, clean bool, progress *TaskProgre
 		time.Sleep(sleepTime)
 		progress.Progress++
 	}
-	fmt.Println("Import complete. Imported", progress.Progress, "master records")
+	log.Log("translate", "Import complete. Imported", progress.Progress, "master records")
 
 	model.MarkAllConflicts()
 	progress.Finished = true
-	fmt.Println("Conflicts marked")
+	log.Log("translate", "Conflicts marked")
 }
 
 func importTranslationData(data []map[string]string, language string, translator *model.User, progress *TaskProgress) {
 	sleepTime, _ := time.ParseDuration("5ms")
-	fmt.Println("Importing", len(data), "translation records as", translator.Name)
+	log.Log("translate", "Importing", len(data), "translation records as", translator.Name)
 	progress.Scale = len(data)
 	progress.Progress = 0
 	for _, record := range data {
@@ -216,31 +217,31 @@ func importTranslationData(data []map[string]string, language string, translator
 		time.Sleep(sleepTime)
 		progress.Progress++
 	}
-	fmt.Println("Import complete:", progress.Progress, "of", len(data))
+	log.Log("translate", "Import complete:", progress.Progress, "of", len(data))
 	
 	model.MarkAllConflicts()
 	progress.Finished = true
-	fmt.Println("Conflicts marked")
+	log.Log("translate", "Conflicts marked")
 }
 
 func ImportHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		fmt.Println("POST import")
+		log.Log("translate", "POST import")
 		// clean := r.FormValue("clean-import") == "on"
 		importType := r.FormValue("type")
 		if importType != "master" && importType != "translations" {
-			fmt.Println("Missing type")
+			log.Warn("translate", "Missing type")
 			http.Redirect(w, r, "/import", 303)
 			return
 		}
 		file, _, err := r.FormFile("import-file")
 		if err != nil {
-			fmt.Println("Error reading file:", err)
+			log.Error("translate", "Error reading file:", err)
 			http.Redirect(w, r, "/import", 303)
 			return
 		}
 		if file == nil {
-			fmt.Println("Missing file")
+			log.Error("translate", "Missing file")
 			http.Redirect(w, r, "/import", 303)
 			return
 		}
@@ -248,13 +249,13 @@ func ImportHandler(w http.ResponseWriter, r *http.Request) {
 		file2 := stripBOM(file)
 		lines, err := csv.NewReader(file2).ReadAll()
 		if err != nil {
-			fmt.Println("Error reading CSV:", err)
+			log.Error("translate", "Error reading CSV:", err)
 			http.Redirect(w, r, "/import", 303)
 			return
 		}
 		file.Close()
 		data := associateData(lines)
-		fmt.Println("Found", len(data), "lines")
+		log.Log("translate", "Found", len(data), "lines")
 
 		progress := new(TaskProgress)
 		progress.ID = <- nextProgressID
@@ -318,7 +319,7 @@ func RecalculateHandler(w http.ResponseWriter, r *http.Request) {
 func ExportHandler(w http.ResponseWriter, r *http.Request) {
 	language := r.FormValue("language")
 	if language != "" {
-		fmt.Println("Exporting in", language)
+		log.Log("translate", "Exporting in", language)
 		translations := model.GetPreferredTranslations(language, true)
 
 		w.Header().Set("Content-Encoding", "UTF-8")
@@ -348,7 +349,7 @@ func ExportHandler(w http.ResponseWriter, r *http.Request) {
 
 func LiveExportHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		fmt.Println("Exporting live translations")
+		log.Log("translate", "Exporting live translations")
 		translations := model.GetLiveTranslations()
 
 		w.Header().Set("Content-Encoding", "UTF-8")

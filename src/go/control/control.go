@@ -3,6 +3,7 @@ package control
 import (
 	"github.com/dyslexic-charactersheets/translator/src/go/model"
 	"github.com/dyslexic-charactersheets/translator/src/go/config"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	// "code.google.com/p/go.crypto/bcrypt"
 	"crypto/md5"
 	"encoding/hex"
@@ -73,7 +74,7 @@ func Paginate(r *http.Request, size, datasize int) *Pagination {
 	if err != nil {
 		page = 1
 	}
-	fmt.Println("Paginating: page", page, "size =", size, "data size =", datasize)
+	log.Log("control", "Paginating: page", page, "size =", size, "data size =", datasize)
 	if page < 1 {
 		page = 1
 	}
@@ -102,7 +103,7 @@ func Paginate(r *http.Request, size, datasize int) *Pagination {
 	query.Del("page")
 	baseUrl.RawQuery = query.Encode()
 
-	fmt.Println("Pagination: page", page, "of", lastPage, "; offset =", offset, "slice =", slice)
+	log.Log("control", "Pagination: page", page, "of", lastPage, "; offset =", offset, "slice =", slice)
 	return &Pagination{
 		Page: page,
 		Size: size,
@@ -133,18 +134,18 @@ func SetCurrentUser(user *model.User, r *http.Request) {
 func GetCurrentUser(r *http.Request) *model.User {
 	session := seshcookie.GetSession(r.Context())
 	if session == nil {
-		fmt.Println("Get current user: no session")
+		log.Warn("control", "Get current user: no session")
 		return nil
 	}
 	if id, ok := session["user"].(string); ok {
 		if id == "" {
-			fmt.Println("Get current user: nil session id")
+			log.Warn("control", "Get current user: nil session id")
 			return nil
 		}
-		fmt.Println("Get current user:", id)
+		log.Log("control", "Get current user:", id)
 		return model.GetUserByEmail(id)
 	}
-	fmt.Println("Get current user: no session id")
+	log.Warn("control", "Get current user: no session id")
 	return nil
 }
 
@@ -272,7 +273,7 @@ func getTranslationSet(entry *model.StackedEntry, language string, me *model.Use
 		}
 
 		othersGrouped = append(othersGrouped, group)
-		fmt.Println("Grouped translation:", group)
+		log.Log("control", "Grouped translation:", group)
 	}
 
 	return &TranslationSet{
@@ -312,7 +313,7 @@ func myTranslation(set *TranslationSet) *model.StackedTranslation {
 }
 
 func otherTranslations(set *TranslationSet) []GroupedTranslation {
-	fmt.Println("Return other translations:-")
+	log.Log("control", "Return other translations:-")
 	return set.Others
 }
 
@@ -423,7 +424,7 @@ func previewExists(language string, source *model.Source) bool {
 	fullPath := config.Config.PDF.Path + "/" + languagePath + "/" + path + ".pdf"
 
 	fi, err := os.Stat(fullPath)
-	fmt.Println("Stat "+fullPath)
+	log.Log("control", "Stat "+fullPath)
 	return err == nil && !fi.IsDir()
 }
 
@@ -434,7 +435,7 @@ func sourceCompletion(source *model.Source) map[string]int {
 func isVotedUp(translation *model.StackedTranslation, voter *model.User) bool {
 	votes := translation.GetVotes()
 	for _, vote := range votes {
-		// fmt.Println("Vote by", vote.Voter.Email, "=", vote.Vote)
+		// log.Log("control", "Vote by", vote.Voter.Email, "=", vote.Vote)
 		if vote.Voter.Email == voter.Email {
 			return vote.Vote
 		}
@@ -445,7 +446,7 @@ func isVotedUp(translation *model.StackedTranslation, voter *model.User) bool {
 func isVotedDown(translation *model.StackedTranslation, voter *model.User) bool {
 	votes := translation.GetVotes()
 	for _, vote := range votes {
-		// fmt.Println("Vote by", vote.Voter.Email, "=", vote.Vote)
+		// log.Log("control", "Vote by", vote.Voter.Email, "=", vote.Vote)
 		if vote.Voter.Email == voter.Email {
 			return !vote.Vote
 		}
@@ -502,24 +503,24 @@ func renderTemplate(name string, w http.ResponseWriter, r *http.Request, datapro
 	if dataproc != nil {
 		dataproc(&data)
 	}
-	fmt.Println("Rendering page:", name)
+	log.Log("control", "Rendering page:", name)
 
 	t, err := template.New("_base.html").Funcs(templateFuncs).ParseFiles("view/_base.html", "view/"+name+".html")
 	if err != nil {
 		fmt.Fprint(w, "Error:", err)
-		fmt.Println("Error:", err)
+		log.Error("control", "Rendering page: Error:", err)
 		return
 	}
 	t, err = t.ParseGlob("view/inc/*")
 	if err != nil {
 		fmt.Fprint(w, "Error:", err)
-		fmt.Println("Error:", err)
+		log.Error("control", "Rendering page: Error:", err)
 		return
 	}
 	err = t.Execute(w, data)
 	if err != nil {
 		fmt.Fprint(w, "Error:", err)
-		fmt.Println("Error:", err)
+		log.Error("control", "Rendering page: Error:", err)
 	}
 }
 

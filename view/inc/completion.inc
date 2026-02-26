@@ -12,12 +12,14 @@
 
 	<table class='table'>
 		{{ $languageNames := .LanguageNames }}
+		{{ $languagesEnglish := .LanguagesEnglish }}
 		{{ $languageCompletions := .LanguageCompletion }}
 		{{ range $lang := .DisplayLanguages }}
 		{{ $languageName := index $languageNames $lang }}
+		{{ $languageEnglish := index $languagesEnglish $lang }}
 		{{ $languageCompletion := index $languageCompletions $lang }}
 		<tr>
-			<td colspan='4'><img src='/images/flags/{{$lang}}.png'>&nbsp; {{ $languageName }}</td>
+			<td colspan='4'><img src='/images/flags/{{$lang}}.png'>&nbsp; {{ $languageName }} ( {{ $languageEnglish }} )</td>
 		</tr>
 		<tr>
 			{{ range $complete := $languageCompletion }}

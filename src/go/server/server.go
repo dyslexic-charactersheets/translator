@@ -135,6 +135,9 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
+		log.Error("server", "Masquerade: Not admin!")
+		http.Redirect(w, r, "/home", http.StatusFound)
+		return
 
 	case "/login":
 		if r.Method != "POST" {
@@ -161,14 +164,15 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Log("server", "Authorized %s\n", user.Name)
+		log.Log("server", "Login successful!", user.Name, "/", email)
 		control.PingUser(user.Email)
 		session["user"] = user.Email
 		http.Redirect(w, r, "/home", http.StatusFound)
 		return
+
 	case "/logout":
 		if email, ok := session["user"].(string); ok {
-			log.Warn("server", "Logging out %s\n", email)
+			log.Warn("server", "Logging out", email)
 		}
 		delete(session, "user")
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -198,16 +202,17 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		email := r.Form.Get("email")
 		secret := r.Form.Get("secret")
 		user := model.GetUserByEmail(email)
-		fmt.Println("Account reclaim: User at", email)
+		log.Log("server", "Account reclaim: User at", email)
 
 		if r.Method == "POST" {
 			if user == nil {
-				fmt.Println("Account reclaim: Unknown user:", email)
+				log.Log("server", "Account reclaim: Unknown user:", email)
 				http.Redirect(w, r, "/account/reclaim/nouser", http.StatusFound)
 				return
 			}
 			if secret == "" {
 				secret := user.GenerateSecret()
+				log.Log("server", "Account reclaim: Generating new secret:", secret)
 				sendSecretEmail(user, secret)
 				http.Redirect(w, r, "/account/reclaim/sent", http.StatusFound)
 				return
@@ -226,16 +231,20 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						user.Password = string(hash)
 						user.Secret = ""
 						user.Save()
+						log.Log("server", "Account reclaim: Saved", string(hash))
+					} else {
+						log.Error("server", "Account reclaim: Error", err)
 					}
 					http.Redirect(w, r, "/account/reclaim/done", http.StatusFound)
 					return
 				} else {
-					fmt.Println("Account reclaim: Redirecting to password form")
+					log.Warn("server", "Account reclaim: Redirecting to password form")
 					http.Redirect(w, r, "/account/reclaim?email="+email+"&secret="+secret, http.StatusFound)
 					return
 				}
 				return
 			} else {
+				log.Error("server", "Account reclaim: Cannot verify secret")
 				http.Redirect(w, r, "/account/reclaim/incorrect", http.StatusFound)
 				return
 			}

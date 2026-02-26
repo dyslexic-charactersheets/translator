@@ -3,6 +3,7 @@ package control
 import (
 	"github.com/dyslexic-charactersheets/translator/src/go/config"
 	"github.com/dyslexic-charactersheets/translator/src/go/model"
+	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"golang.org/x/crypto/bcrypt"
 	"crypto/sha256"
 	"fmt"
@@ -18,14 +19,15 @@ import (
 )
 
 func DashboardHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Dashboard")
+	log.Log("users", "Dashboard")
 
 	renderTemplate("home", w, r, func(data *TemplateData) {
-		fmt.Println("Dashboard params")
+		log.Log("users", "Dashboard params")
+		data.LanguagesEnglish = model.LanguageNamesEnglish
 		data.LanguageCompletion = model.GetLanguageCompletion()
 		data.LiveLoginURL = GetLiveLoginURL(r)
 		data.DevLoginURL = GetDevLoginURL(r)
-		fmt.Println("Dashboard params done")
+		log.Log("users", "Dashboard params done")
 	})
 }
 
@@ -70,7 +72,7 @@ func UsersShowInviteHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("user")
 	user := model.GetUserByEmail(email)
 	if user == nil {
-		fmt.Println("User not found: "+email)
+		log.Log("users", "User not found: "+email)
 		return
 	}
 	
@@ -103,7 +105,7 @@ func UsersRenewInviteHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("user")
 	user := model.GetUserByEmail(email)
 	if user == nil {
-		fmt.Println("User not found: "+email)
+		log.Warn("users", "User not found:", email)
 		return
 	}
 
@@ -121,10 +123,10 @@ func UsersReinviteHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("user")
 	user := model.GetUserByEmail(email)
 	if user == nil {
-		fmt.Println("User not found: "+email)
+		log.Warn("users", "User not found: "+email)
 		return
 	}
-	fmt.Println("Reinviting")
+	log.Log("users", "Reinviting")
 	sendInvitationEmail(user)
 
 	http.Redirect(w, r, "/users/show-invite?user="+email, 303)
@@ -179,10 +181,10 @@ https://www.dyslexic-charactersheets.com/
 	secret := user.GenerateSecret()
 	msg = fmt.Sprintf(msg, model.LanguageNamesEnglish[language], hostname, email, secret)
 
-	fmt.Println("Sending message to", user.Email, "\n", msg)
+	log.Log("users", "Sending message to", user.Email, "\n", msg)
 
 	if ok := config.SendMail(email, msg); ok {
-		fmt.Println("Invitation email sent to "+user.Email)
+		log.Log("users", "Invitation email sent to "+user.Email)
 	}
 }
 
@@ -283,7 +285,7 @@ type Issue struct {
 
 
 func AuthRedirectHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Auth redirect")
+	log.Log("users", "Auth redirect")
 
 	liveLoginURL := GetLiveLoginURL(r)
 	http.Redirect(w, r, liveLoginURL, 303)
@@ -294,7 +296,7 @@ func GetLiveLoginURL(r *http.Request) string {
 	base := config.Config.Live.LiveLoginURL
 	sharedSecret := config.Config.Live.SharedSecret
 
-	fmt.Println("Live login: shared secret:", sharedSecret)
+	log.Log("users", "Live login: shared secret:", sharedSecret)
 
 	currentUser := GetCurrentUser(r)
 	h := sha256.New()
@@ -302,7 +304,7 @@ func GetLiveLoginURL(r *http.Request) string {
 	hash := h.Sum(nil)
 	token := hex.EncodeToString(hash)
 
-	fmt.Println("Live login: token:", token)
+	log.Log("users", "Live login: token:", token)
 
 	h = sha256.New()
 	h.Write([]byte(token))
@@ -310,7 +312,7 @@ func GetLiveLoginURL(r *http.Request) string {
 	hash = h.Sum(nil)
 	signature := hex.EncodeToString(hash)
 	
-	fmt.Println("Live login: signature:", signature)
+	log.Log("users", "Live login: signature:", signature)
 
 	return base+"?login="+token+":"+signature
 }

@@ -3,7 +3,6 @@ package control
 import (
 	"github.com/dyslexic-charactersheets/translator/src/go/model"
 	"io/ioutil"
-	"fmt"
 	"github.com/dyslexic-charactersheets/translator/src/go/log"
 	"net/http"
 	"strconv"
@@ -14,16 +13,16 @@ import (
 
 func ImportPotHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		fmt.Println("POT import")
+		log.Log("POT", "POT import")
 		
 		file, _, err := r.FormFile("import-file")
 		if err != nil {
-			fmt.Println("Error reading file:", err)
+			log.Error("POT", "POT import: Error reading file:", err)
 			http.Redirect(w, r, "/import", 303)
 			return
 		}
 		if file == nil {
-			fmt.Println("Missing file")
+			log.Error("POT", "POT import: Missing file")
 			http.Redirect(w, r, "/import", 303)
 			return
 		}
@@ -33,7 +32,7 @@ func ImportPotHandler(w http.ResponseWriter, r *http.Request) {
 
 		data, err := ioutil.ReadAll(file)
 		if err != nil {
-			fmt.Println("Error loading file:", err)
+			log.Error("POT", "POT import: Error loading file:", err)
 			http.Redirect(w, r, "/import", 303)
 			return
 		}
@@ -53,7 +52,7 @@ func importPot(data []byte, progress *TaskProgress) {
 
 	poFile, err := po.LoadData(data)
 	if err != nil {
-		fmt.Println("Error:", err)
+		log.Error("POT", "POT import: Error:", err)
 		progress.Abort = true
 		return
 	}
@@ -77,6 +76,10 @@ func importPot(data []byte, progress *TaskProgress) {
 			case "Pathfinder 2nd Edition":
 				gameCode = "pathfinder2"
 				filepathBase = "Pathfinder 2e/"
+
+			case "Pathfinder 2nd Edition Remaster":
+				gameCode = "pathfinder2r"
+				filepathBase = "Pathfinder 2e Remaster/"
 
 			case "Pathfinder 1st Edition":
 			case "Pathfinder":
@@ -243,7 +246,7 @@ func readPoReferences(comment po.Comment) []poReference {
 func ExportPoHandler(w http.ResponseWriter, r *http.Request) {
 	language := r.FormValue("language")
 	if language != "" {
-		fmt.Println("Exporting in", language)
+		log.Log("POT", "Exporting in", language)
 		translations := model.GetPreferredTranslations(language, true)
 
 		messages := make([]po.Message, 0, len(translations))
